@@ -91,7 +91,7 @@ class GraphicsPrintUtils {
   }
 
   /// Draw image (resized)
-  void image(
+    void image(
     img.Image subImage, {
     int? width,
     int? height,
