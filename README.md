@@ -1,4 +1,4 @@
-# Bootstrap Package
+# Graphics Print utils Package
 
 The `graphics_print_utils` package is a Flutter plugin designed for generating and printing graphics, text, barcodes, and QR codes. It provides tools to create high-quality printable content, including support for custom paper sizes, text styles, and alignment options. The package simplifies the process of creating and rendering printable assets for various use cases, such as receipts, labels, and tickets, making it an essential utility for Flutter applications requiring printing capabilities.
 
@@ -32,7 +32,7 @@ To use this package, add it to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  graphics_print_utils: ^0.0.2
+  graphics_print_utils: ^0.0.3
 ```
 
 
