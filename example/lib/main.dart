@@ -1,0 +1,288 @@
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart' hide Barcode;
+import 'package:graphics_print_utils/graphics_print.dart';
+import 'package:image/image.dart' as img;
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Uint8List pngImage = Uint8List.fromList([]);
+  @override
+  void initState() {
+    initialize();
+    super.initState();
+  }
+
+  initialize() async {
+    pngImage = await drawEscImage();
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Plugin example app', style: TextStyle()),
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Builder(
+              builder: (context) {
+                if (pngImage.isEmpty) {
+                  return SizedBox();
+                } else {
+                  return Image.memory(pngImage);
+                }
+              },
+            ),
+          ),
+        ),
+        bottomNavigationBar: SizedBox(
+          height: 60,
+          child: TextButton(
+            onPressed: () async {
+              final profile = await CapabilityProfile.load();
+              final generator = Generator(PaperSize.mm80, profile);
+              List<int> bytes = generator.image(img.decodeImage(pngImage)!);
+
+              /// You can use the bytes to print using your printer
+            },
+            child: Text(
+              'Generate Printing Bytes',
+              style: TextStyle(fontSize: 20),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  drawEscImage() async {
+    GraphicsPrintUtils escImageUtil = GraphicsPrintUtils(
+      paperSize: PrintPaperSize.mm80,
+      margin: PrintMargin(left: 10, right: 10),
+    );
+    // Add store name and header
+    escImageUtil.feed(lines: 2);
+    escImageUtil.text(
+      "SuperMart",
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.large,
+        align: PrintAlign.center,
+        bold: true,
+      ),
+    );
+    escImageUtil.text(
+      "123 Main Street",
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    escImageUtil.text(
+      "City, State, ZIP",
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    escImageUtil.text(
+      "Tel: (123) 456-7890",
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    escImageUtil.line();
+
+    // Add itemized list
+    escImageUtil.row(
+      columns: [
+        PrintColumn('Item', flex: 4),
+        PrintColumn(
+          'Qty',
+          flex: 1,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+        PrintColumn(
+          'Price',
+          flex: 2,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+      ],
+      spacing: 10,
+    );
+    escImageUtil.line();
+    escImageUtil.row(
+      columns: [
+        PrintColumn('Apples', flex: 4),
+        PrintColumn(
+          '2',
+          flex: 1,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+        PrintColumn(
+          '\$3.00',
+          flex: 2,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+      ],
+      spacing: 10,
+    );
+    escImageUtil.row(
+      columns: [
+        PrintColumn('Bananas', flex: 4),
+        PrintColumn(
+          '1',
+          flex: 1,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+        PrintColumn(
+          '\$1.50',
+          flex: 2,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+      ],
+      spacing: 10,
+    );
+    escImageUtil.row(
+      columns: [
+        PrintColumn('Milk', flex: 4),
+        PrintColumn(
+          '1',
+          flex: 1,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+        PrintColumn(
+          '\$2.50',
+          flex: 2,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+      ],
+      spacing: 10,
+    );
+    escImageUtil.line();
+
+    // Add totals
+    escImageUtil.row(
+      columns: [
+        PrintColumn('Subtotal', flex: 6),
+        PrintColumn(
+          '\$7.00',
+          flex: 2,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+      ],
+      spacing: 10,
+    );
+    escImageUtil.row(
+      columns: [
+        PrintColumn('Tax', flex: 6),
+        PrintColumn(
+          '\$0.50',
+          flex: 2,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+      ],
+      spacing: 10,
+    );
+    escImageUtil.row(
+      columns: [
+        PrintColumn('Total', flex: 6, style: PrintTextStyle(bold: true)),
+        PrintColumn(
+          '\$7.50',
+          flex: 2,
+          style: PrintTextStyle(align: PrintAlign.right, bold: true),
+        ),
+      ],
+      spacing: 10,
+    );
+    escImageUtil.line();
+
+    // Add QR code for receipt verification
+    escImageUtil.text(
+      "Scan for Receipt",
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    escImageUtil.qr('https://example.com/receipt/12345');
+
+    escImageUtil.text(
+      "Scan for invoice",
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    escImageUtil.barcode('1259854', barcode: Barcode.code128());
+
+    // Add footer
+    escImageUtil.text(
+      "Thank you for shopping!",
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    escImageUtil.text(
+      "Visit us again!",
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    // Add multilingual text
+    // escImageUtil.text(
+    //   "شكراً لتسوقكم معنا! sdsajdg", // Arabic: Thank you for shopping with us!,
+    // style: PrintTextStyle(
+    //   fontSize: PrintFontSize.small,
+    //   align: PrintAlign.center,
+    // ),
+    // );
+    escImageUtil.text(
+      "¡Gracias por comprar con nosotros!", // Spanish: Thank you for shopping with us!
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    // escImageUtil.text(
+    //   "感谢您的光临！", // Chinese: Thank you for shopping with us!
+    //   style: PrintTextStyle(
+    //     fontSize: PrintFontSize.small,
+    //     align: PrintAlign.center,
+    //   ),
+    // );
+    escImageUtil.text(
+      "Merci pour vos achats !", // French: Thank you for shopping with us!
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    escImageUtil.text(
+      "Bedankt voor uw aankoop!", // Dutch: Thank you for shopping with us!
+      style: PrintTextStyle(
+        fontSize: PrintFontSize.small,
+        align: PrintAlign.center,
+      ),
+    );
+    escImageUtil.feed(lines: 50);
+    var bytes = escImageUtil.build();
+    return bytes;
+  }
+}
