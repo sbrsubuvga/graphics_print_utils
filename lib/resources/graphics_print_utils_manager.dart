@@ -13,7 +13,7 @@ class GraphicsPrintUtils {
   int runningHeight = 0;
   PrintMargin margin = PrintMargin(left: 5, right: 5);
   final PrintPaperSize paperSize;
-  BitmapFont font = arial24;
+  BitmapFont font = arial14;
   final textColor = ColorUint1.rgba(0, 0, 0, 255);
 
   GraphicsPrintUtils({
@@ -24,7 +24,7 @@ class GraphicsPrintUtils {
     fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
   }
 
-  BitmapFont _getFont(PrintTextStyle style, {String language = 'en'}) {
+  BitmapFont _getFont(PrintTextStyle style) {
     BitmapFont myFont = arial14;
     switch (style.fontSize) {
       case PrintFontSize.small:
