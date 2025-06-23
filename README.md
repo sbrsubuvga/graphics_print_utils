@@ -32,7 +32,7 @@ To use this package, add it to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  graphics_print_utils: ^0.0.1
+  graphics_print_utils: ^0.0.2
 ```
 
 
@@ -40,4 +40,4 @@ dependencies:
 ## Example App Screenshot
 
 
-<img alt="Example App Screenshot" src="https://github.com/sbrsubuvga/graphics_print_utils/blob/main/assets/Screenshot.png"  />
+<img alt="Example App Screenshot" src="https://raw.githubusercontent.com/sbrsubuvga/graphics_print_utils/refs/heads/main/assets/Screenshot.png"  />
