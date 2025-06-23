@@ -1,8 +1,6 @@
 import 'dart:typed_data';
-import 'dart:ui' as ui;
 
 import 'package:barcode_image/barcode_image.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart';
 import 'package:image/image.dart' as img;
