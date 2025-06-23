@@ -69,9 +69,9 @@ class GraphicsPrintUtils {
     runningHeight += textFont.lineHeight + 10;
   }
 
-  String _reverseText(String text) {
-    return text.split('').reversed.join();
-  }
+  // String _reverseText(String text) {
+  //   return text.split('').reversed.join();
+  // }
 
   /// Draw horizontal line
   void line({int thickness = 1}) {
