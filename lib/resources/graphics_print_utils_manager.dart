@@ -11,15 +11,19 @@ class GraphicsPrintUtils {
   int runningHeight = 0;
   PrintMargin margin = PrintMargin(left: 5, right: 5);
   final PrintPaperSize paperSize;
-  BitmapFont font = arial14;
+  BitmapFont font = arial24;
   final textColor = ColorUint1.rgba(0, 0, 0, 255);
 
   GraphicsPrintUtils({
     this.paperSize = PrintPaperSize.mm80,
     this.margin = const PrintMargin(),
+    PrintTextStyle? style = const PrintTextStyle(),
   }) {
     utilImage = img.Image(width: paperSize.width, height: 1000);
     fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
+    if(style!=null){
+      font=_getFont(style);
+    }
   }
 
   BitmapFont _getFont(PrintTextStyle style) {
