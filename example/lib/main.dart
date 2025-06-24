@@ -85,7 +85,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
     escImageUtil.text(
-      "123 Main Street",
+"123 Main Street, Suite 456, Building 7, Business District, City, State, ZIP, Country, Near Central Park, Opposite to ABC Mall, Landmark XYZ",
       style: PrintTextStyle(
         fontSize: PrintFontSize.small,
         align: PrintAlign.center,
@@ -144,7 +144,7 @@ class _MyAppState extends State<MyApp> {
     escImageUtil.dottedLine();
     escImageUtil.row(
       columns: [
-        PrintColumn('Bananas', flex: 4),
+        PrintColumn('Bananas  ', flex: 4),
         PrintColumn(
           '1',
           flex: 1,
@@ -211,13 +211,14 @@ class _MyAppState extends State<MyApp> {
       ],
       spacing: 10,
     );
+
+
     escImageUtil.line();
 
     // Add QR code for receipt verification
     escImageUtil.text(
       "Scan for Receipt",
       style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
         align: PrintAlign.center,
       ),
     );
@@ -226,7 +227,6 @@ class _MyAppState extends State<MyApp> {
     escImageUtil.text(
       "Scan for invoice",
       style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
         align: PrintAlign.center,
       ),
     );
@@ -236,32 +236,23 @@ class _MyAppState extends State<MyApp> {
     escImageUtil.text(
       "Thank you for shopping!",
       style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
         align: PrintAlign.center,
       ),
     );
     escImageUtil.text(
       "Visit us again!",
       style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
         align: PrintAlign.center,
       ),
     );
-    // Add multilingual text
-    // escImageUtil.text(
-    //   "شكراً لتسوقكم معنا! sdsajdg", // Arabic: Thank you for shopping with us!,
-    // style: PrintTextStyle(
-    //   fontSize: PrintFontSize.small,
-    //   align: PrintAlign.center,
-    // ),
-    // );
+
     escImageUtil.text(
-      "¡Gracias por comprar con nosotros!", // Spanish: Thank you for shopping with us!
+      "¡Gracias por comprar con nosotros!", // Spanish: Thank you for shopping with us!", // Spanish: Thank you for shopping with us!
       style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
         align: PrintAlign.center,
       ),
     );
+    //
     // escImageUtil.text(
     //   "感谢您的光临！", // Chinese: Thank you for shopping with us!
     //   style: PrintTextStyle(
@@ -272,14 +263,12 @@ class _MyAppState extends State<MyApp> {
     escImageUtil.text(
       "Merci pour vos achats !", // French: Thank you for shopping with us!
       style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
         align: PrintAlign.center,
       ),
     );
     escImageUtil.text(
       "Bedankt voor uw aankoop!", // Dutch: Thank you for shopping with us!
       style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
         align: PrintAlign.center,
       ),
     );
