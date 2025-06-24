@@ -21,8 +21,8 @@ class GraphicsPrintUtils {
   }) {
     utilImage = img.Image(width: paperSize.width, height: 1000);
     fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
-    if(style!=null){
-      font=_getFont(style);
+    if (style != null) {
+      font = _getFont(style);
     }
   }
 
@@ -91,7 +91,7 @@ class GraphicsPrintUtils {
   }
 
   /// Draw image (resized)
-    void image(
+  void image(
     img.Image subImage, {
     int? width,
     int? height,
