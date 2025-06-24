@@ -71,7 +71,7 @@ flutter:
   # https://flutter.dev/to/font-from-package
 
 topics:
-  - flutter
+  - esc_pos
   - printing
   - graphics
   - qr-codes
