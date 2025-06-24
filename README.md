@@ -32,7 +32,7 @@ To use this package, add it to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  graphics_print_utils: ^0.0.5
+  graphics_print_utils: ^0.0.6
 ```
 
 

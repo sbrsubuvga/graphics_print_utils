@@ -90,6 +90,23 @@ class GraphicsPrintUtils {
     runningHeight += thickness + 10;
   }
 
+/// Draw dotted horizontal line
+void dottedLine({int thickness = 1, int dotWidth = 5, int spacing = 3}) {
+  int x = margin.left;
+  while (x < paperSize.width - margin.right) {
+    fillRect(
+      utilImage,
+      x1: x,
+      x2: x + dotWidth,
+      y1: runningHeight,
+      y2: runningHeight + thickness,
+      color: textColor,
+    );
+    x += dotWidth + spacing;
+  }
+  runningHeight += thickness + 10;
+}
+
   /// Draw image (resized)
   void image(
     img.Image subImage, {

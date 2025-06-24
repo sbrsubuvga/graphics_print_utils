@@ -141,6 +141,7 @@ class _MyAppState extends State<MyApp> {
       ],
       spacing: 10,
     );
+    escImageUtil.dottedLine();
     escImageUtil.row(
       columns: [
         PrintColumn('Bananas', flex: 4),
@@ -157,6 +158,7 @@ class _MyAppState extends State<MyApp> {
       ],
       spacing: 10,
     );
+    escImageUtil.dottedLine();
     escImageUtil.row(
       columns: [
         PrintColumn('Milk', flex: 4),
