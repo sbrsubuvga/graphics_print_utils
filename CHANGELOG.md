@@ -1,3 +1,6 @@
+## 0.0.7
+* Added support for default TextStyle with configurable text size.
+
 ## 0.0.6
 * Added support for Dotted Line.
 

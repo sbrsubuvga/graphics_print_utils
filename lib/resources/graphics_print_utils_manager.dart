@@ -270,7 +270,7 @@ class PrintTextStyle {
   final bool bold;
 
   const PrintTextStyle({
-    this.fontSize = PrintFontSize.small,
+    this.fontSize = PrintFontSize.medium,
     this.align = PrintAlign.left,
     this.bold = true,
   });
