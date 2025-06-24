@@ -257,6 +257,8 @@ class PrintPaperSize {
   static const mm58 = PrintPaperSize._internal(372);
   static const mm72 = PrintPaperSize._internal(503);
   static const mm80 = PrintPaperSize._internal(558);
+  static const a4 = PrintPaperSize._internal(794);
+  static const a3 = PrintPaperSize._internal(1123);
 
   /// Create a custom PaperSize with a specific width
   factory PrintPaperSize.custom(int width) {
