@@ -1,4 +1,4 @@
-import 'dart:io';
+
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -130,6 +130,23 @@ class _MyAppState extends State<MyApp> {
     escImageUtil.row(
       columns: [
         PrintColumn('Apples', flex: 4),
+        PrintColumn(
+          '2',
+          flex: 1,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+        PrintColumn(
+          '\$3.00',
+          flex: 2,
+          style: PrintTextStyle(align: PrintAlign.right),
+        ),
+      ],
+      spacing: 10,
+    );
+    escImageUtil.dottedLine();
+    escImageUtil.row(
+      columns: [
+        PrintColumn('عليكم', flex: 4),
         PrintColumn(
           '2',
           flex: 1,

@@ -412,13 +412,27 @@ class GraphicsPrintUtils {
       }
 
       _ensureHeight(runningHeight + (maxLines*font.lineHeight) + 10);
-
+      img.BitmapFont textFont = font;
+      PrintAlign align = PrintAlign.left;
       // Draw each line within the column
       for (String line in lines) {
-        if (column.style.align == PrintAlign.center) {
+         final arabic = isArabic(line);
+         if(arabic) {
+           textFont=arabic24;
+           // Step 1: Shape the Arabic characters into their presentation forms.
+           // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
+           line = ShapeArabic.shape(line);
+         }
+
+
+           textFont = _getFont(column.style,isArabic: arabic); // Make sure _getFont returns a font that handles RTL if you use it
+           align = column.style.align;
+
+
+        if (align == PrintAlign.center) {
           textXPosition = xPosition +
               ((columnWidth - font.getMetrics(line).width) / 2).round();
-        } else if (column.style.align == PrintAlign.right) {
+        } else if (align == PrintAlign.right) {
           textXPosition = xPosition +
               (columnWidth - font.getMetrics(line).width).round();
         }
@@ -426,7 +440,7 @@ class GraphicsPrintUtils {
         drawString(
           utilImage,
           line,
-          font: font,
+          font: textFont,
           x: textXPosition,
           y: tempRunningHeight,
           color: textColor,
