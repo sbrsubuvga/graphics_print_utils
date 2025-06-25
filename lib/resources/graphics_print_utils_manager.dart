@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:barcode_image/barcode_image.dart';
 import 'package:flutter/services.dart';
+import 'package:graphics_print_utils/fonts/arabic_48.dart';
 import 'package:graphics_print_utils/fonts/shape_arabic.dart';
 import 'package:image/image.dart';
 import 'package:image/image.dart' as img;
@@ -34,7 +35,7 @@ class GraphicsPrintUtils {
     switch (style.fontSize) {
       case PrintFontSize.small:
         if(isArabic) {
-          myFont=arabic24;
+          myFont=arial14;
         } else {
           myFont = arial14;
         }
@@ -48,7 +49,7 @@ class GraphicsPrintUtils {
         break;
       case PrintFontSize.large:
         if(isArabic) {
-          myFont=arabic24;
+          myFont=arabic48;
         } else {
           myFont = arial48;
         }
@@ -153,11 +154,9 @@ class GraphicsPrintUtils {
     bool arabic=isArabic(text);
     if(arabic){
       textFont=arabic24;
-      print("Input text to textArabic: $text");
       // Step 1: Shape the Arabic characters into their presentation forms.
       // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
       text = ShapeArabic.shape(text);
-      print("Shaped text (logical order): $text");
     }
 
     if (style != null) {
@@ -166,7 +165,7 @@ class GraphicsPrintUtils {
     }
 
 
-    // final fontZipFile2 = await rootBundle.load('assets/not_serif_24.zip').then((byteData) => byteData.buffer.asUint8List());
+    // final fontZipFile2 = await rootBundle.load('assets/noto_serif_24.zip').then((byteData) => byteData.buffer.asUint8List());
     // textFont = img.BitmapFont.fromZip(fontZipFile2);
 
 

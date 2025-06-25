@@ -278,10 +278,11 @@ class _MyAppState extends State<MyApp> {
       ),
     );
 
- // final fontZipFile1 = await rootBundle.load('assets/Screenshot.png').then((byteData) => byteData.buffer.asUint8List());
- // final fontZipFile2 = await rootBundle.load('assets/not_serif_24.zip').then((byteData) => byteData.buffer.asUint8List());
+
+ // final fontZipFile2 = await rootBundle.load('assets/noto_serif_48.zip').then((byteData) => byteData.buffer.asUint8List());
  //    final arbicFont = img.BitmapFont.fromZip(fontZipFile2);
 
+    // print(fontZipFile2);
 escImageUtil.text(
   "السلام عليكم", // Arabic: Peace be upon you!//لسلام عليكم
   style: PrintTextStyle(
