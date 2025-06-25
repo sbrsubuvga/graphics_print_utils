@@ -301,7 +301,7 @@ class _MyAppState extends State<MyApp> {
 
     // print(fontZipFile2);
 escImageUtil.text(
-  "السلام عليكم", // Arabic: Peace be upon you!//لسلام عليكم
+  "   السلام عليكم  ", // Arabic: Peace be upon you!//لسلام عليكم
   style: PrintTextStyle(
     align: PrintAlign.center,
   ),

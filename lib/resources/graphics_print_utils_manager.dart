@@ -172,7 +172,7 @@ class GraphicsPrintUtils {
     int maxWidth = paperSize.width - margin.width;
 
     String currentLine = '';
-    List<String> words = text.split(' '); // This assumes space as word delimiter
+    List<String> words = text.split(' ').where((e)=>e.isNotEmpty).toList(); // This assumes space as word delimiter
     for (int i = words.length - 1; i >= 0; i--) { // Iterate words in reverse logical order for RTL line breaking
       String word = words[i];
       String testLine = currentLine.isEmpty ? word : '$word $currentLine'; // Build line from right
