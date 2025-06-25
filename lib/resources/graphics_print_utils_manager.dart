@@ -44,10 +44,9 @@ class GraphicsPrintUtils {
   }
 
   void _ensureHeight(int requiredHeight) {
-    print("requiredHeight: $requiredHeight, current height: ${utilImage.height}");
     if (requiredHeight > utilImage.height) {
       final newHeight = requiredHeight + 1000; // Add extra space to minimize frequent resizing
-      print("Resizing utilImage to new height: $newHeight");
+
       final resizedImage = img.Image(width: utilImage.width, height: newHeight);
       fill(resizedImage, color: ColorUint1.rgba(255, 255, 255, 255));
       // Copy the content of the old image to the new resized image
@@ -71,6 +70,74 @@ class GraphicsPrintUtils {
 
     int maxWidth = paperSize.width - margin.width;
 
+     final lines=  text.split('\n');
+      if(lines.length>1){
+       for (String line in lines) {
+         this.text(line, style: style);
+       }
+      }
+      else {
+        // Find the maximum text that fits in one line
+        String currentLine = '';
+        for (String word in text.split(' ')) {
+          String testLine = currentLine.isEmpty ? word : '$currentLine $word';
+          if (textFont
+              .getMetrics(testLine)
+              .width <= maxWidth) {
+            currentLine = testLine;
+          }
+          else {
+            break;
+          }
+        }
+
+        // Draw the current line
+        int xPosition = margin.left;
+        if (align == PrintAlign.center) {
+          xPosition = ((paperSize.width - textFont
+              .getMetrics(currentLine)
+              .width) / 2)
+              .round();
+        } else if (align == PrintAlign.right) {
+          xPosition = (paperSize.width - textFont
+              .getMetrics(currentLine)
+              .width - margin.width)
+              .round();
+        }
+
+        _ensureHeight(runningHeight + textFont.lineHeight + 10);
+        drawString(
+          utilImage,
+          currentLine,
+          font: textFont,
+          x: xPosition,
+          y: runningHeight,
+          color: textColor,
+        );
+        runningHeight += textFont.lineHeight + 10;
+
+
+        // Recursively call the function with the remaining text
+        String remainingText = text.substring(currentLine.length).trim();
+        if (remainingText.isNotEmpty) {
+          this.text(remainingText, style: style);
+        }
+      }
+  }
+
+  void textArabic(String text,img.BitmapFont arabicFont, {PrintTextStyle? style}) async{
+    BitmapFont textFont = arabicFont;
+    PrintAlign align = PrintAlign.right;
+    // if (style != null) {
+    //   textFont = _getFont(style);
+    //   align = style.align;
+    // }
+
+
+    // text = text.split('').reversed.join();
+
+    int maxWidth = paperSize.width - margin.width;
+
     // Find the maximum text that fits in one line
     String currentLine = '';
     for (String word in text.split(' ')) {
@@ -91,11 +158,10 @@ class GraphicsPrintUtils {
       xPosition = (paperSize.width - textFont.getMetrics(currentLine).width - margin.width)
           .round();
     }
-
     _ensureHeight(runningHeight+textFont.lineHeight + 10);
     drawString(
       utilImage,
-      currentLine,
+      shapeArabic(currentLine),
       font: textFont,
       x: xPosition,
       y: runningHeight,
@@ -109,6 +175,18 @@ class GraphicsPrintUtils {
     if (remainingText.isNotEmpty) {
       this.text(remainingText, style: style);
     }
+  }
+
+
+  String shapeArabic(String text) {
+    return text
+        .replaceAll('ش', 'ﺷ')
+        .replaceAll('ك', 'ﻜ')
+        .replaceAll('ر', 'ﺮ')
+        .replaceAll('ا', 'ﺍ')
+        .replaceAll('ً', 'ً') // this one is already right
+    // and so on...
+        ;
   }
 
   /// Draw horizontal line
@@ -187,9 +265,7 @@ class GraphicsPrintUtils {
         }
       }
     }
-    print("resized.height ${runningHeight}");
     runningHeight += (resized.height + 10);
-    print("resized.height ${runningHeight}");
   }
 
   /// Draw QR Code
