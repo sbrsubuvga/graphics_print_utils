@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_esc_pos_utils/flutter_esc_pos_utils.dart' hide Barcode;
 import 'package:graphics_print_utils/graphics_print.dart';
 import 'package:image/image.dart' as img;
@@ -252,9 +254,12 @@ class _MyAppState extends State<MyApp> {
         align: PrintAlign.center,
       ),
     );
-    //
-    // escImageUtil.text(
+
+    // final fontZipCh = await rootBundle.load('assets/ch_24_ch.zip').then((byteData) => byteData.buffer.asUint8List());
+    // final chFont = img.BitmapFont.fromZip(fontZipCh);
+    // escImageUtil.textArabic(
     //   "感谢您的光临！", // Chinese: Thank you for shopping with us!
+    //   chFont,
     //   style: PrintTextStyle(
     //     fontSize: PrintFontSize.small,
     //     align: PrintAlign.center,
@@ -272,6 +277,33 @@ class _MyAppState extends State<MyApp> {
         align: PrintAlign.center,
       ),
     );
+
+ // final fontZipFile1 = await rootBundle.load('assets/Screenshot.png').then((byteData) => byteData.buffer.asUint8List());
+ // final fontZipFile2 = await rootBundle.load('assets/not_serif_24.zip').then((byteData) => byteData.buffer.asUint8List());
+ //    final arbicFont = img.BitmapFont.fromZip(fontZipFile2);
+
+escImageUtil.text(
+  "السلام عليكم", // Arabic: Peace be upon you!//لسلام عليكم
+  style: PrintTextStyle(
+    align: PrintAlign.center,
+  ),
+);
+    escImageUtil.text(
+      "مرحباً بالعالم", // Arabic: Peace be upon you!
+      style: PrintTextStyle(
+        align: PrintAlign.center,
+      ),
+    );
+
+    escImageUtil.text(
+      "sgduag  بالعالم", // Arabic: Peace be upon you!
+      style: PrintTextStyle(
+        align: PrintAlign.center,
+      ),
+    );
+
+
+
     escImageUtil.feed(lines: 50);
     var bytes = escImageUtil.build();
     return bytes;

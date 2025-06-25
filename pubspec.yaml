@@ -23,6 +23,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
 
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -41,9 +42,9 @@ flutter:
 
 
   # To add assets to your plugin package, add an assets section, like this:
-  assets:
-     - assets/arabic.zip
-     # Ensure the arabic.zip file is included as an asset
+#  assets:
+#    - assets/
+  # Ensure the arabic.zip file is included as an asset
   #
   # For details regarding assets in packages, see
   # https://flutter.dev/to/asset-from-package
