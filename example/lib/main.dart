@@ -146,7 +146,7 @@ class _MyAppState extends State<MyApp> {
     escImageUtil.dottedLine();
     escImageUtil.row(
       columns: [
-        PrintColumn('عليكم', flex: 4),
+        PrintColumn('قيمة', flex: 4),
         PrintColumn(
           '2',
           flex: 1,
@@ -314,11 +314,12 @@ escImageUtil.text(
     );
 
     escImageUtil.text(
-      "sgduag  بالعالم", // Arabic: Peace be upon you!
+      "قيمة", // Arabic: Peace be upon you!
       style: PrintTextStyle(
         align: PrintAlign.center,
       ),
     );
+
 
 
 
