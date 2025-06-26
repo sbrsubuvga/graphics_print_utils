@@ -30,26 +30,26 @@ class GraphicsPrintUtils {
     }
   }
 
-  BitmapFont _getFont(PrintTextStyle style,{bool isArabic=false}) {
+  BitmapFont _getFont(PrintTextStyle style, {bool isArabic = false}) {
     BitmapFont myFont = arial14;
     switch (style.fontSize) {
       case PrintFontSize.small:
-        if(isArabic) {
-          myFont=arial14;
+        if (isArabic) {
+          myFont = arial14;
         } else {
           myFont = arial14;
         }
         break;
       case PrintFontSize.medium:
-        if(isArabic) {
-          myFont=arabic24;
+        if (isArabic) {
+          myFont = arabic24;
         } else {
           myFont = arial24;
         }
         break;
       case PrintFontSize.large:
-        if(isArabic) {
-          myFont=arabic48;
+        if (isArabic) {
+          myFont = arabic48;
         } else {
           myFont = arial48;
         }
@@ -59,10 +59,11 @@ class GraphicsPrintUtils {
     return myFont;
   }
 
-
   void _ensureHeight(int requiredHeight) {
     if (requiredHeight > utilImage.height) {
-      final newHeight = requiredHeight + 1000; // Add extra space to minimize frequent resizing
+      final newHeight =
+          requiredHeight +
+          1000; // Add extra space to minimize frequent resizing
 
       final resizedImage = img.Image(width: utilImage.width, height: newHeight);
       fill(resizedImage, color: ColorUint1.rgba(255, 255, 255, 255));
@@ -75,7 +76,6 @@ class GraphicsPrintUtils {
       utilImage = resizedImage;
     }
   }
-
 
   // void text(String text, {PrintTextStyle? style}) {
   //   BitmapFont textFont = font;
@@ -146,36 +146,43 @@ class GraphicsPrintUtils {
     final arabicRegex = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]');
     return arabicRegex.hasMatch(text);
   }
-// Assuming this is part of a class that has access to the members mentioned above.
-  void text(String text, {PrintTextStyle? style}) async {
 
+  // Assuming this is part of a class that has access to the members mentioned above.
+  void text(String text, {PrintTextStyle? style}) async {
     img.BitmapFont textFont = font;
     PrintAlign align = PrintAlign.left;
-    bool arabic=isArabic(text);
-    if(arabic){
-      textFont=arabic24;
+    bool arabic = isArabic(text);
+    if (arabic) {
+      textFont = arabic24;
       // Step 1: Shape the Arabic characters into their presentation forms.
       // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
       text = ShapeArabic.shape(text);
     }
 
     if (style != null) {
-      textFont = _getFont(style,isArabic: arabic); // Make sure _getFont returns a font that handles RTL if you use it
+      textFont = _getFont(
+        style,
+        isArabic: arabic,
+      ); // Make sure _getFont returns a font that handles RTL if you use it
       align = style.align;
     }
-
 
     // final fontZipFile2 = await rootBundle.load('assets/noto_serif_24.zip').then((byteData) => byteData.buffer.asUint8List());
     // textFont = img.BitmapFont.fromZip(fontZipFile2);
 
-
     int maxWidth = paperSize.width - margin.width;
 
     String currentLine = '';
-    List<String> words = text.split(' ').where((e)=>e.isNotEmpty).toList(); // This assumes space as word delimiter
-    for (int i = words.length - 1; i >= 0; i--) { // Iterate words in reverse logical order for RTL line breaking
+    List<String> words = text
+        .split(' ')
+        .where((e) => e.isNotEmpty)
+        .toList(); // This assumes space as word delimiter
+    for (int i = words.length - 1; i >= 0; i--) {
+      // Iterate words in reverse logical order for RTL line breaking
       String word = words[i];
-      String testLine = currentLine.isEmpty ? word : '$word $currentLine'; // Build line from right
+      String testLine = currentLine.isEmpty
+          ? word
+          : '$word $currentLine'; // Build line from right
       if (textFont.getMetrics(testLine).width <= maxWidth) {
         currentLine = testLine;
       } else {
@@ -189,13 +196,17 @@ class GraphicsPrintUtils {
     // Draw the current line
     int xPosition = margin.left;
     if (align == PrintAlign.center) {
-      xPosition = ((paperSize.width - textFont.getMetrics(currentLine).width) / 2)
-          .round();
+      xPosition =
+          ((paperSize.width - textFont.getMetrics(currentLine).width) / 2)
+              .round();
     } else if (align == PrintAlign.right) {
       // For RTL text aligned right, the text starts at (paperSize.width - text width - margin.right).
       // The current align.right logic for xPosition is correct if getMetrics gives logical width.
-      xPosition = (paperSize.width - textFont.getMetrics(currentLine).width - margin.width)
-          .round();
+      xPosition =
+          (paperSize.width -
+                  textFont.getMetrics(currentLine).width -
+                  margin.width)
+              .round();
     }
 
     _ensureHeight(runningHeight + textFont.lineHeight + 10);
@@ -214,11 +225,10 @@ class GraphicsPrintUtils {
     // Simplest is to rejoin the words not used and pass them to the recursive call.
     List<String> remainingWords = [];
     int currentLineWordCount = currentLine.split(' ').length;
-    for(int i = 0; i < words.length - currentLineWordCount; i++) {
+    for (int i = 0; i < words.length - currentLineWordCount; i++) {
       remainingWords.add(words[i]); // Words that were not put into currentLine
     }
     String remainingText = remainingWords.join(' ');
-
 
     if (remainingText.isNotEmpty) {
       // Note: 'this.text' implies a method named 'text' in the same class.
@@ -232,11 +242,9 @@ class GraphicsPrintUtils {
     }
   }
 
-
-
   /// Draw horizontal line
   void line({int thickness = 1}) {
-    _ensureHeight(runningHeight+thickness + 20);
+    _ensureHeight(runningHeight + thickness + 20);
     fillRect(
       utilImage,
       x1: margin.left,
@@ -246,12 +254,10 @@ class GraphicsPrintUtils {
       color: textColor,
     );
     runningHeight += thickness + 20;
-
   }
 
   /// Draw dotted horizontal line
   void dottedLine({int thickness = 1, int dotWidth = 5, int spacing = 3}) {
-
     _ensureHeight(thickness + 20);
     int x = margin.left;
     while (x < paperSize.width - margin.right) {
@@ -281,8 +287,7 @@ class GraphicsPrintUtils {
       height: height ?? subImage.height,
     );
 
-
-    _ensureHeight(runningHeight+resized.height + 10);
+    _ensureHeight(runningHeight + resized.height + 10);
 
     int posX;
     final posY = runningHeight;
@@ -377,12 +382,11 @@ class GraphicsPrintUtils {
 
   void row({required List<PrintColumn> columns, int spacing = 10}) {
     int xPosition = margin.left;
-    int totalWidth =paperSize.width - margin.width - (spacing * (columns.length - 1));
+    int totalWidth =
+        paperSize.width - margin.width - (spacing * (columns.length - 1));
     int totalRatio = columns.fold(0, (sum, col) => sum + col.flex);
 
-
-
-    int maxLines=0;
+    int maxLines = 0;
     for (PrintColumn column in columns) {
       int columnWidth = (totalWidth * (column.flex / totalRatio)).round();
       int textXPosition = xPosition;
@@ -404,37 +408,38 @@ class GraphicsPrintUtils {
         lines.add(currentLine);
       }
 
-
       int tempRunningHeight = rowYPosition;
 
-      if(maxLines<lines.length){
-        maxLines=lines.length;
+      if (maxLines < lines.length) {
+        maxLines = lines.length;
       }
 
-      _ensureHeight(runningHeight + (maxLines*font.lineHeight) + 10);
+      _ensureHeight(runningHeight + (maxLines * font.lineHeight) + 10);
       img.BitmapFont textFont = font;
       PrintAlign align = PrintAlign.left;
       // Draw each line within the column
       for (String line in lines) {
-         final arabic = isArabic(line);
-         if(arabic) {
-           textFont=arabic24;
-           // Step 1: Shape the Arabic characters into their presentation forms.
-           // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
-           line = ShapeArabic.shape(line);
-         }
+        final arabic = isArabic(line);
+        if (arabic) {
+          textFont = arabic24;
+          // Step 1: Shape the Arabic characters into their presentation forms.
+          // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
+          line = ShapeArabic.shape(line);
+        }
 
-
-           textFont = _getFont(column.style,isArabic: arabic); // Make sure _getFont returns a font that handles RTL if you use it
-           align = column.style.align;
-
+        textFont = _getFont(
+          column.style,
+          isArabic: arabic,
+        ); // Make sure _getFont returns a font that handles RTL if you use it
+        align = column.style.align;
 
         if (align == PrintAlign.center) {
-          textXPosition = xPosition +
+          textXPosition =
+              xPosition +
               ((columnWidth - font.getMetrics(line).width) / 2).round();
         } else if (align == PrintAlign.right) {
-          textXPosition = xPosition +
-              (columnWidth - font.getMetrics(line).width).round();
+          textXPosition =
+              xPosition + (columnWidth - font.getMetrics(line).width).round();
         }
 
         drawString(
@@ -445,18 +450,17 @@ class GraphicsPrintUtils {
           y: tempRunningHeight,
           color: textColor,
         );
-        tempRunningHeight+=font.lineHeight;
-
+        tempRunningHeight += font.lineHeight;
       }
 
       xPosition += columnWidth + spacing;
     }
 
-    runningHeight += (maxLines*font.lineHeight)+10;
+    runningHeight += (maxLines * font.lineHeight) + 10;
   }
 
   void feed({int lines = 1}) {
-    _ensureHeight(runningHeight+font.lineHeight + 10);
+    _ensureHeight(runningHeight + font.lineHeight + 10);
     runningHeight += (font.lineHeight + 10) * lines;
   }
 
@@ -511,7 +515,6 @@ class PrintTextStyle {
     );
   }
 }
-
 
 class PrintColumn {
   final String text;

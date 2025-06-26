@@ -1,6 +1,4 @@
-
 // ﺍﺎﺏﺑﺒﺖﺕﺗﺘﺙﺛﺜﺚﺝﺟﺠﺞﺡﺣﺤﺢﺥﺧﺨﺦﺩﺪﺫﺬﺭﺮﺯﺰﺱﺳﺴﺲﺵﺷﺸﺶﺹﺻﺼﺺﺽﺿﻀﺾﻁﻄﻂﻅﻇﻈﻆﻉﻋﻌﻊﻍﻏﻐﻎﻑﻓﻔﻒﻕﻗﻘﻖﻙﻛﻜﻚﻝﻟﻠﻞﻡﻣﻤﻢﻥﻧﻨﻦﻩﻫﻬﻪﻭﻮﻱﻳﻴﻲ
-
 
 //ﺍ ﺍ ﺎ ﺎ ﺏ ﺑ ﺒ ﺖ ﺕ ﺗ ﺘ ﺖ ﺙ ﺛ ﺜ ﺚ ﺝ ﺟ ﺠ ﺞ ﺡ ﺣ ﺤ ﺢ ﺥ ﺧ ﺨ ﺦ ﺩ ﺩ ﺪ ﺪ ﺫ ﺫ ﺬ ﺬ ﺭ ﺭ ﺮ ﺮ ﺯ ﺯ ﺰ ﺰ ﺱ ﺳ ﺴ ﺲ ﺵ ﺷ ﺸ ﺶ ﺹ ﺻ ﺼ ﺺ ﺽ ﺿ ﻀ ﺾ ﻁ ﻁ ﻄ ﻂ ﻅ ﻇ ﻈ ﻆ ﻉ ﻋ ﻌ ﻊ ﻍ ﻏ ﻐ ﻎ ﻑ ﻓ ﻔ ﻒ ﻕ ﻗ ﻘ ﻖ ﻙ ﻛ ﻜ ﻚ ﻝ ﻟ ﻠ ﻞ ﻡ ﻣ ﻤ ﻢ ﻥ ﻧ ﻨ ﻦ ﻩ ﻫ ﻬ ﻪ ﻭ ﻭ ﻮ ﻮ ﻱ ﻳ ﻴ ﻲ
 class ShapeArabic {
@@ -55,7 +53,8 @@ class ShapeArabic {
       final int? prev = i > 0 ? runes[i - 1] : null;
       final int? next = i < runes.length - 1 ? runes[i + 1] : null;
 
-      final bool connectBefore = prev != null && _canConnectBefore(prev) && _canConnectAfter(current);
+      final bool connectBefore =
+          prev != null && _canConnectBefore(prev) && _canConnectAfter(current);
       final bool connectAfter = next != null && _canConnectAfter(next);
 
       final forms = _shapingTable[current];

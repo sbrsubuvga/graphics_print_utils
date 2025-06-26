@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -87,7 +86,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
     escImageUtil.text(
-"123 Main Street, Suite 456, Building 7, Business District, City, State, ZIP, Country, Near Central Park, Opposite to ABC Mall, Landmark XYZ",
+      "123 Main Street, Suite 456, Building 7, Business District, City, State, ZIP, Country, Near Central Park, Opposite to ABC Mall, Landmark XYZ",
       style: PrintTextStyle(
         fontSize: PrintFontSize.small,
         align: PrintAlign.center,
@@ -231,45 +230,34 @@ class _MyAppState extends State<MyApp> {
       spacing: 10,
     );
 
-
     escImageUtil.line();
 
     // Add QR code for receipt verification
     escImageUtil.text(
       "Scan for Receipt",
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
     escImageUtil.qr('https://example.com/receipt/12345');
 
     escImageUtil.text(
       "Scan for invoice",
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
     escImageUtil.barcode('1259854', barcode: Barcode.code128());
 
     // Add footer
     escImageUtil.text(
       "Thank you for shopping!",
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
     escImageUtil.text(
       "Visit us again!",
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
 
     escImageUtil.text(
       "¡Gracias por comprar con nosotros!", // Spanish: Thank you for shopping with us!", // Spanish: Thank you for shopping with us!
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
 
     // final fontZipCh = await rootBundle.load('assets/ch_24_ch.zip').then((byteData) => byteData.buffer.asUint8List());
@@ -284,46 +272,32 @@ class _MyAppState extends State<MyApp> {
     // );
     escImageUtil.text(
       "Merci pour vos achats !", // French: Thank you for shopping with us!
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
     escImageUtil.text(
       "Bedankt voor uw aankoop!", // Dutch: Thank you for shopping with us!
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
 
-
- // final fontZipFile2 = await rootBundle.load('assets/noto_serif_48.zip').then((byteData) => byteData.buffer.asUint8List());
- //    final arbicFont = img.BitmapFont.fromZip(fontZipFile2);
+    // final fontZipFile2 = await rootBundle.load('assets/noto_serif_48.zip').then((byteData) => byteData.buffer.asUint8List());
+    //    final arbicFont = img.BitmapFont.fromZip(fontZipFile2);
 
     // print(fontZipFile2);
-escImageUtil.text(
-  "   السلام عليكم  ", // Arabic: Peace be upon you!//لسلام عليكم
-  style: PrintTextStyle(
-    align: PrintAlign.center,
-  ),
-);
+    escImageUtil.text(
+      "   السلام عليكم  ", // Arabic: Peace be upon you!//لسلام عليكم
+      style: PrintTextStyle(align: PrintAlign.center),
+    );
     escImageUtil.text(
       "مرحباً بالعالم", // Arabic: Peace be upon you!
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
 
     escImageUtil.text(
       "قيمة", // Arabic: Peace be upon you!
-      style: PrintTextStyle(
-        align: PrintAlign.center,
-      ),
+      style: PrintTextStyle(align: PrintAlign.center),
     );
 
-
-
-
-    escImageUtil.feed(lines: 50);
+    escImageUtil.feed(lines: 5);
     var bytes = escImageUtil.build();
     return bytes;
   }
