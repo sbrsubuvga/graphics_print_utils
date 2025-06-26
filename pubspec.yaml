@@ -1,9 +1,9 @@
 name: graphics_print_utils
 description: "A Flutter plugin for generating and printing graphics, text, barcodes, and QR codes."
-version: 0.0.7
-homepage: https://github.com/sbrsubuvga/graphics_print_utils.git
-repository: https://github.com/sbrsubuvga/graphics_print_utils.git
-issue_tracker: https://github.com/sbrsubuvga/graphics_print_utils/issues
+version: 0.0.8
+#homepage: https://github.com/sbrsubuvga/graphics_print_utils.git
+#repository: https://github.com/sbrsubuvga/graphics_print_utils.git
+#issue_tracker: https://github.com/sbrsubuvga/graphics_print_utils/issues
 
 environment:
   sdk: ^3.8.1

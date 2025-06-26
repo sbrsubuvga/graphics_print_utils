@@ -294,7 +294,7 @@ class _MyAppState extends State<MyApp> {
 
     escImageUtil.text(
       "قيمة", // Arabic: Peace be upon you!
-      style: PrintTextStyle(align: PrintAlign.center),
+      style: PrintTextStyle(align: PrintAlign.right),
     );
 
     escImageUtil.feed(lines: 5);

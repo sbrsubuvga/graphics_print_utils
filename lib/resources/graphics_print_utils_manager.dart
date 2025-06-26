@@ -436,10 +436,10 @@ class GraphicsPrintUtils {
         if (align == PrintAlign.center) {
           textXPosition =
               xPosition +
-              ((columnWidth - font.getMetrics(line).width) / 2).round();
+              ((columnWidth - textFont.getMetrics(line).width) / 2).round();
         } else if (align == PrintAlign.right) {
           textXPosition =
-              xPosition + (columnWidth - font.getMetrics(line).width).round();
+              xPosition + (columnWidth - textFont.getMetrics(line).width).round();
         }
 
         drawString(
