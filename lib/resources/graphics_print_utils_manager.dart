@@ -293,7 +293,9 @@ class GraphicsPrintUtils {
     if (align == PrintAlign.center) {
       xPosition = ((paperSize.width - textWidth) / 2).round();
     } else if (align == PrintAlign.right) {
-      xPosition = (paperSize.width - textWidth - margin.right).round();
+      final marginWidth=rtl?margin.width:margin.left;
+
+      xPosition = (paperSize.width - textWidth - marginWidth).round();
     }
 
     _ensureHeight(runningHeight + textFont.lineHeight + 10);
