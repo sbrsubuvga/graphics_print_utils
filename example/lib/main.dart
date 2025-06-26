@@ -77,226 +77,230 @@ class _MyAppState extends State<MyApp> {
     );
     // Add store name and header
     escImageUtil.feed(lines: 2);
-    escImageUtil.text(
-      "SuperMart",
-      style: PrintTextStyle(
-        fontSize: PrintFontSize.large,
-        align: PrintAlign.center,
-        bold: true,
-      ),
-    );
-    escImageUtil.text(
-      "123 Main Street, Suite 456, Building 7, Business District, City, State, ZIP, Country, Near Central Park, Opposite to ABC Mall, Landmark XYZ",
-      style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
-        align: PrintAlign.center,
-      ),
-    );
-    escImageUtil.text(
-      "City, State, ZIP",
-      style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
-        align: PrintAlign.center,
-      ),
-    );
-    escImageUtil.text(
-      "Tel: (123) 456-7890",
-      style: PrintTextStyle(
-        fontSize: PrintFontSize.small,
-        align: PrintAlign.center,
-      ),
-    );
-    escImageUtil.line();
-
-    // Add itemized list
-    escImageUtil.row(
-      columns: [
-        PrintColumn('Item', flex: 4),
-        PrintColumn(
-          'Qty',
-          flex: 1,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-        PrintColumn(
-          'Price',
-          flex: 2,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-      ],
-      spacing: 10,
-    );
-    escImageUtil.line();
-    escImageUtil.row(
-      columns: [
-        PrintColumn('Apples', flex: 4),
-        PrintColumn(
-          '2',
-          flex: 1,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-        PrintColumn(
-          '\$3.00',
-          flex: 2,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-      ],
-      spacing: 10,
-    );
-    escImageUtil.dottedLine();
-    escImageUtil.row(
-      columns: [
-        PrintColumn('قيمة', flex: 4),
-        PrintColumn(
-          '2',
-          flex: 1,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-        PrintColumn(
-          '\$3.00',
-          flex: 2,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-      ],
-      spacing: 10,
-    );
-    escImageUtil.dottedLine();
-    escImageUtil.row(
-      columns: [
-        PrintColumn('Bananas  ', flex: 4),
-        PrintColumn(
-          '1',
-          flex: 1,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-        PrintColumn(
-          '\$1.50',
-          flex: 2,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-      ],
-      spacing: 10,
-    );
-    escImageUtil.dottedLine();
-    escImageUtil.row(
-      columns: [
-        PrintColumn('Milk', flex: 4),
-        PrintColumn(
-          '1',
-          flex: 1,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-        PrintColumn(
-          '\$2.50',
-          flex: 2,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-      ],
-      spacing: 10,
-    );
-    escImageUtil.line();
-
-    // Add totals
-    escImageUtil.row(
-      columns: [
-        PrintColumn('Subtotal', flex: 6),
-        PrintColumn(
-          '\$7.00',
-          flex: 2,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-      ],
-      spacing: 10,
-    );
-    escImageUtil.row(
-      columns: [
-        PrintColumn('Tax', flex: 6),
-        PrintColumn(
-          '\$0.50',
-          flex: 2,
-          style: PrintTextStyle(align: PrintAlign.right),
-        ),
-      ],
-      spacing: 10,
-    );
-    escImageUtil.row(
-      columns: [
-        PrintColumn('Total', flex: 6, style: PrintTextStyle(bold: true)),
-        PrintColumn(
-          '\$7.50',
-          flex: 2,
-          style: PrintTextStyle(align: PrintAlign.right, bold: true),
-        ),
-      ],
-      spacing: 10,
-    );
-
-    escImageUtil.line();
-
-    // Add QR code for receipt verification
-    escImageUtil.text(
-      "Scan for Receipt",
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-    escImageUtil.qr('https://example.com/receipt/12345');
-
-    escImageUtil.text(
-      "Scan for invoice",
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-    escImageUtil.barcode('1259854', barcode: Barcode.code128());
-
-    // Add footer
-    escImageUtil.text(
-      "Thank you for shopping!",
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-    escImageUtil.text(
-      "Visit us again!",
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-
-    escImageUtil.text(
-      "¡Gracias por comprar con nosotros!", // Spanish: Thank you for shopping with us!", // Spanish: Thank you for shopping with us!
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-
-    // final fontZipCh = await rootBundle.load('assets/ch_24_ch.zip').then((byteData) => byteData.buffer.asUint8List());
-    // final chFont = img.BitmapFont.fromZip(fontZipCh);
-    // escImageUtil.textArabic(
-    //   "感谢您的光临！", // Chinese: Thank you for shopping with us!
-    //   chFont,
+    // escImageUtil.text(
+    //   "SuperMart",
+    //   style: PrintTextStyle(
+    //     fontSize: PrintFontSize.large,
+    //     align: PrintAlign.center,
+    //     bold: true,
+    //   ),
+    // );
+    // escImageUtil.text(
+    //   "123 Main Street, Suite 456, Building 7, Business District, City, State, ZIP, Country, Near Central Park, Opposite to ABC Mall, Landmark XYZ",
     //   style: PrintTextStyle(
     //     fontSize: PrintFontSize.small,
     //     align: PrintAlign.center,
     //   ),
     // );
-    escImageUtil.text(
-      "Merci pour vos achats !", // French: Thank you for shopping with us!
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-    escImageUtil.text(
-      "Bedankt voor uw aankoop!", // Dutch: Thank you for shopping with us!
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-
-    // final fontZipFile2 = await rootBundle.load('assets/noto_serif_48.zip').then((byteData) => byteData.buffer.asUint8List());
-    //    final arbicFont = img.BitmapFont.fromZip(fontZipFile2);
-
-    // print(fontZipFile2);
+    // escImageUtil.text(
+    //   "City, State, ZIP",
+    //   style: PrintTextStyle(
+    //     fontSize: PrintFontSize.small,
+    //     align: PrintAlign.center,
+    //   ),
+    // );
+    // escImageUtil.text(
+    //   "Tel: (123) 456-7890",
+    //   style: PrintTextStyle(
+    //     fontSize: PrintFontSize.small,
+    //     align: PrintAlign.center,
+    //   ),
+    // );
+    // escImageUtil.line();
+    //
+    // // Add itemized list
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('Item', flex: 4),
+    //     PrintColumn(
+    //       'Qty',
+    //       flex: 1,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //     PrintColumn(
+    //       'Price',
+    //       flex: 2,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //   ],
+    //   spacing: 10,
+    // );
+    // escImageUtil.line();
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('Apples', flex: 4),
+    //     PrintColumn(
+    //       '2',
+    //       flex: 1,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //     PrintColumn(
+    //       '\$3.00',
+    //       flex: 2,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //   ],
+    //   spacing: 10,
+    // );
+    // escImageUtil.dottedLine();
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('قيمة', flex: 4),
+    //     PrintColumn(
+    //       '2',
+    //       flex: 1,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //     PrintColumn(
+    //       '\$3.00',
+    //       flex: 2,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //   ],
+    //   spacing: 10,
+    // );
+    // escImageUtil.dottedLine();
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('Bananas  ', flex: 4),
+    //     PrintColumn(
+    //       '1',
+    //       flex: 1,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //     PrintColumn(
+    //       '\$1.50',
+    //       flex: 2,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //   ],
+    //   spacing: 10,
+    // );
+    // escImageUtil.dottedLine();
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('Milk', flex: 4),
+    //     PrintColumn(
+    //       '1',
+    //       flex: 1,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //     PrintColumn(
+    //       '\$2.50',
+    //       flex: 2,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //   ],
+    //   spacing: 10,
+    // );
+    // escImageUtil.line();
+    //
+    // // Add totals
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('Subtotal', flex: 6),
+    //     PrintColumn(
+    //       '\$7.00',
+    //       flex: 2,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //   ],
+    //   spacing: 10,
+    // );
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('Tax', flex: 6),
+    //     PrintColumn(
+    //       '\$0.50',
+    //       flex: 2,
+    //       style: PrintTextStyle(align: PrintAlign.right),
+    //     ),
+    //   ],
+    //   spacing: 10,
+    // );
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('Total', flex: 6, style: PrintTextStyle(bold: true)),
+    //     PrintColumn(
+    //       '\$7.50',
+    //       flex: 2,
+    //       style: PrintTextStyle(align: PrintAlign.right, bold: true),
+    //     ),
+    //   ],
+    //   spacing: 10,
+    // );
+    //
+    // escImageUtil.line();
+    //
+    // // Add QR code for receipt verification
+    // escImageUtil.text(
+    //   "Scan for Receipt",
+    //   style: PrintTextStyle(align: PrintAlign.center),
+    // );
+    // escImageUtil.qr('https://example.com/receipt/12345');
+    //
+    // escImageUtil.text(
+    //   "Scan for invoice",
+    //   style: PrintTextStyle(align: PrintAlign.center),
+    // );
+    // escImageUtil.barcode('1259854', barcode: Barcode.code128());
+    //
+    // // Add footer
+    // escImageUtil.text(
+    //   "Thank you for shopping!",
+    //   style: PrintTextStyle(align: PrintAlign.center),
+    // );
+    // escImageUtil.text(
+    //   "Visit us again!",
+    //   style: PrintTextStyle(align: PrintAlign.center),
+    // );
+    //
+    // escImageUtil.text(
+    //   "¡Gracias por comprar con nosotros!", // Spanish: Thank you for shopping with us!", // Spanish: Thank you for shopping with us!
+    //   style: PrintTextStyle(align: PrintAlign.center),
+    // );
+    //
+    // // final fontZipCh = await rootBundle.load('assets/ch_24_ch.zip').then((byteData) => byteData.buffer.asUint8List());
+    // // final chFont = img.BitmapFont.fromZip(fontZipCh);
+    // // escImageUtil.textArabic(
+    // //   "感谢您的光临！", // Chinese: Thank you for shopping with us!
+    // //   chFont,
+    // //   style: PrintTextStyle(
+    // //     fontSize: PrintFontSize.small,
+    // //     align: PrintAlign.center,
+    // //   ),
+    // // );
+    // escImageUtil.text(
+    //   "Merci pour vos achats !", // French: Thank you for shopping with us!
+    //   style: PrintTextStyle(align: PrintAlign.center),
+    // );
+    // escImageUtil.text(
+    //   "Bedankt voor uw aankoop!", // Dutch: Thank you for shopping with us!
+    //   style: PrintTextStyle(align: PrintAlign.center),
+    // );
+    //
+    // // final fontZipFile2 = await rootBundle.load('assets/noto_serif_48.zip').then((byteData) => byteData.buffer.asUint8List());
+    // //    final arbicFont = img.BitmapFont.fromZip(fontZipFile2);
+    //
+    // // print(fontZipFile2);
     escImageUtil.text(
       "   السلام عليكم  ", // Arabic: Peace be upon you!//لسلام عليكم
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-    escImageUtil.text(
-      "مرحباً بالعالم", // Arabic: Peace be upon you!
-      style: PrintTextStyle(align: PrintAlign.center),
-    );
-
-    escImageUtil.text(
-      "قيمة", // Arabic: Peace be upon you!
       style: PrintTextStyle(align: PrintAlign.right),
     );
+    // escImageUtil.text(
+    //   "مرحباً بالعالم", // Arabic: Peace be upon you!
+    //   style: PrintTextStyle(align: PrintAlign.center),
+    // );
+    //
+    // escImageUtil.text(
+    //   "قيمة", // Arabic: Peace be upon you!
+    //   style: PrintTextStyle(align: PrintAlign.right),
+    // );
 
+    escImageUtil.text(
+      "Small-12.0,Beef Burger -10.0,Indian Rice -127.0,Tandoori Roti -110.0", // Arabic: Peace be upon you!
+      style: PrintTextStyle(align: PrintAlign.left),
+    );
     escImageUtil.feed(lines: 5);
     var bytes = escImageUtil.build();
     return bytes;

@@ -147,72 +147,160 @@ class GraphicsPrintUtils {
     return arabicRegex.hasMatch(text);
   }
 
-  // Assuming this is part of a class that has access to the members mentioned above.
+  // // Assuming this is part of a class that has access to the members mentioned above.
+  // void text(String text, {PrintTextStyle? style}) async {
+  //   img.BitmapFont textFont = font;
+  //   PrintAlign align = PrintAlign.left;
+  //   bool arabic = isArabic(text);
+  //   if (arabic) {
+  //     textFont = arabic24;
+  //     // Step 1: Shape the Arabic characters into their presentation forms.
+  //     // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
+  //     text = ShapeArabic.shape(text);
+  //   }
+  //
+  //   if (style != null) {
+  //     textFont = _getFont(
+  //       style,
+  //       isArabic: arabic,
+  //     ); // Make sure _getFont returns a font that handles RTL if you use it
+  //     align = style.align;
+  //   }
+  //
+  //   // final fontZipFile2 = await rootBundle.load('assets/noto_serif_24.zip').then((byteData) => byteData.buffer.asUint8List());
+  //   // textFont = img.BitmapFont.fromZip(fontZipFile2);
+  //
+  //   int maxWidth = paperSize.width - margin.width;
+  //
+  //   String currentLine = '';
+  //   List<String> words = text
+  //       .split(' ')
+  //       .where((e) => e.isNotEmpty)
+  //       .toList(); // This assumes space as word delimiter
+  //   for (int i = words.length - 1; i >= 0; i--) {
+  //     // Iterate words in reverse logical order for RTL line breaking
+  //     String word = words[i];
+  //     String testLine = currentLine.isEmpty
+  //         ? word
+  //         : '$word $currentLine'; // Build line from right
+  //     if (textFont.getMetrics(testLine).width <= maxWidth) {
+  //       currentLine = testLine;
+  //     } else {
+  //       break; // Line is full
+  //     }
+  //   }
+  //
+  //   // After determining 'currentLine' in logical order (reading from right to left visually)
+  //   // It's crucial that `drawString` correctly handles this logical order for RTL display.
+  //
+  //   // Draw the current line
+  //   int xPosition = margin.left;
+  //   if (align == PrintAlign.center) {
+  //     xPosition =
+  //         ((paperSize.width - textFont.getMetrics(currentLine).width) / 2)
+  //             .round();
+  //   } else if (align == PrintAlign.right) {
+  //     // For RTL text aligned right, the text starts at (paperSize.width - text width - margin.right).
+  //     // The current align.right logic for xPosition is correct if getMetrics gives logical width.
+  //     xPosition =
+  //         (paperSize.width -
+  //                 textFont.getMetrics(currentLine).width -
+  //                 margin.width)
+  //             .round();
+  //   }
+  //
+  //   _ensureHeight(runningHeight + textFont.lineHeight + 10);
+  //   drawString(
+  //     utilImage,
+  //     currentLine, // Pass the shaped text in its logical order
+  //     font: textFont,
+  //     x: xPosition,
+  //     y: runningHeight,
+  //     color: textColor,
+  //   );
+  //   runningHeight += textFont.lineHeight + 10;
+  //
+  //   // Recursively call the function with the remaining text
+  //   // This part needs to be careful with indexing if you adapted line breaking for RTL.
+  //   // Simplest is to rejoin the words not used and pass them to the recursive call.
+  //   List<String> remainingWords = [];
+  //   int currentLineWordCount = currentLine.split(' ').length;
+  //   for (int i = 0; i < words.length - currentLineWordCount; i++) {
+  //     remainingWords.add(words[i]); // Words that were not put into currentLine
+  //   }
+  //   String remainingText = remainingWords.join(' ');
+  //
+  //   if (remainingText.isNotEmpty) {
+  //     // Note: 'this.text' implies a method named 'text' in the same class.
+  //     // If 'this.text' means the original 'void text(String text, ...)'
+  //     // then it will re-shape the text, which is redundant.
+  //     // Ensure the recursive call doesn't re-shape already shaped text.
+  //     // You might need a `textArabicShaped(String shapedText, ...)` for recursion.
+  //     // For now, assuming you want to re-shape, which is inefficient but functionally ok if `text`
+  //     // doesn't call shape again.
+  //     this.text(remainingText, style: style);
+  //   }
+  // }
+
   void text(String text, {PrintTextStyle? style}) async {
+    bool rtl = isArabic(text); // Determine direction
     img.BitmapFont textFont = font;
     PrintAlign align = PrintAlign.left;
-    bool arabic = isArabic(text);
-    if (arabic) {
+
+    if (rtl) {
       textFont = arabic24;
-      // Step 1: Shape the Arabic characters into their presentation forms.
-      // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
-      text = ShapeArabic.shape(text);
+      text = ShapeArabic.shape(text); // Shape once
     }
 
     if (style != null) {
-      textFont = _getFont(
-        style,
-        isArabic: arabic,
-      ); // Make sure _getFont returns a font that handles RTL if you use it
+      textFont = _getFont(style, isArabic: rtl);
       align = style.align;
     }
 
-    // final fontZipFile2 = await rootBundle.load('assets/noto_serif_24.zip').then((byteData) => byteData.buffer.asUint8List());
-    // textFont = img.BitmapFont.fromZip(fontZipFile2);
-
     int maxWidth = paperSize.width - margin.width;
 
-    String currentLine = '';
-    List<String> words = text
-        .split(' ')
-        .where((e) => e.isNotEmpty)
-        .toList(); // This assumes space as word delimiter
-    for (int i = words.length - 1; i >= 0; i--) {
-      // Iterate words in reverse logical order for RTL line breaking
-      String word = words[i];
-      String testLine = currentLine.isEmpty
-          ? word
-          : '$word $currentLine'; // Build line from right
-      if (textFont.getMetrics(testLine).width <= maxWidth) {
-        currentLine = testLine;
-      } else {
-        break; // Line is full
+    // Line breaking (reverse for RTL)
+    List<String> words = text.split(' ').where((e) => e.isNotEmpty).toList();
+    List<String> currentLineWords = [];
+
+    int totalWidth = 0;
+    if (rtl) {
+      for (int i = words.length - 1; i >= 0; i--) {
+        String tempLine = [...words.sublist(i)].reversed.join(' ');
+        int lineWidth = textFont.getMetrics(tempLine).width;
+        if (lineWidth <= maxWidth) {
+          currentLineWords.insert(0, words[i]);
+        } else {
+          break;
+        }
+      }
+    } else {
+      for (String word in words) {
+        String tempLine = (currentLineWords + [word]).join(' ');
+        int lineWidth = textFont.getMetrics(tempLine).width;
+        if (lineWidth <= maxWidth) {
+          currentLineWords.add(word);
+        } else {
+          break;
+        }
       }
     }
 
-    // After determining 'currentLine' in logical order (reading from right to left visually)
-    // It's crucial that `drawString` correctly handles this logical order for RTL display.
+    String currentLine = currentLineWords.join(' ');
+    int textWidth = textFont.getMetrics(currentLine).width;
 
-    // Draw the current line
     int xPosition = margin.left;
     if (align == PrintAlign.center) {
-      xPosition =
-          ((paperSize.width - textFont.getMetrics(currentLine).width) / 2)
-              .round();
+      xPosition = ((paperSize.width - textWidth) / 2).round();
     } else if (align == PrintAlign.right) {
-      // For RTL text aligned right, the text starts at (paperSize.width - text width - margin.right).
-      // The current align.right logic for xPosition is correct if getMetrics gives logical width.
-      xPosition =
-          (paperSize.width -
-                  textFont.getMetrics(currentLine).width -
-                  margin.width)
-              .round();
+      xPosition = (paperSize.width - textWidth - margin.right).round();
     }
 
     _ensureHeight(runningHeight + textFont.lineHeight + 10);
+
     drawString(
       utilImage,
-      currentLine, // Pass the shaped text in its logical order
+      currentLine,
       font: textFont,
       x: xPosition,
       y: runningHeight,
@@ -220,27 +308,17 @@ class GraphicsPrintUtils {
     );
     runningHeight += textFont.lineHeight + 10;
 
-    // Recursively call the function with the remaining text
-    // This part needs to be careful with indexing if you adapted line breaking for RTL.
-    // Simplest is to rejoin the words not used and pass them to the recursive call.
-    List<String> remainingWords = [];
-    int currentLineWordCount = currentLine.split(' ').length;
-    for (int i = 0; i < words.length - currentLineWordCount; i++) {
-      remainingWords.add(words[i]); // Words that were not put into currentLine
-    }
-    String remainingText = remainingWords.join(' ');
-
-    if (remainingText.isNotEmpty) {
-      // Note: 'this.text' implies a method named 'text' in the same class.
-      // If 'this.text' means the original 'void text(String text, ...)'
-      // then it will re-shape the text, which is redundant.
-      // Ensure the recursive call doesn't re-shape already shaped text.
-      // You might need a `textArabicShaped(String shapedText, ...)` for recursion.
-      // For now, assuming you want to re-shape, which is inefficient but functionally ok if `text`
-      // doesn't call shape again.
-      this.text(remainingText, style: style);
+    // Remaining text
+    int usedCount = currentLineWords.length;
+    List<String> remainingWords = rtl
+        ? words.sublist(0, words.length - usedCount)
+        : words.sublist(usedCount);
+    if (remainingWords.isNotEmpty) {
+      this.text(remainingWords.join(' '), style: style);
     }
   }
+
+
 
   /// Draw horizontal line
   void line({int thickness = 1}) {
