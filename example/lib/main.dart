@@ -25,8 +25,8 @@ class _MyAppState extends State<MyApp> {
     super.initState();
   }
 
-  initialize() async {
-    pngImage = await drawEscImage();
+  initialize()  {
+    pngImage =  drawEscImage();
     setState(() {});
   }
 
@@ -70,7 +70,7 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  drawEscImage() async {
+  drawEscImage()  {
     GraphicsPrintUtils escImageUtil = GraphicsPrintUtils(
       paperSize: PrintPaperSize.mm80,
       margin: PrintMargin(left: 10, right: 10),

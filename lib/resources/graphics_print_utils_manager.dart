@@ -23,7 +23,7 @@ class GraphicsPrintUtils {
     this.margin = const PrintMargin(),
     PrintTextStyle? style = const PrintTextStyle(),
   }) {
-    utilImage = img.Image(width: paperSize.width, height: 1000);
+    utilImage = img.Image(width: paperSize.width, height: 5000);
     fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
     if (style != null) {
       font = _getFont(style);
@@ -59,11 +59,12 @@ class GraphicsPrintUtils {
     return myFont;
   }
 
+
   void _ensureHeight(int requiredHeight) {
     if (requiredHeight > utilImage.height) {
       final newHeight =
           requiredHeight +
-          1000; // Add extra space to minimize frequent resizing
+          5000; // Add extra space to minimize frequent resizing
 
       final resizedImage = img.Image(width: utilImage.width, height: newHeight);
       fill(resizedImage, color: ColorUint1.rgba(255, 255, 255, 255));
@@ -74,6 +75,34 @@ class GraphicsPrintUtils {
         }
       }
       utilImage = resizedImage;
+    }
+  }
+
+
+  void _ensureHeight1(int requiredHeight) {
+    if (requiredHeight > utilImage.height) {
+      final newHeight = requiredHeight + 1000;
+
+      final newImage = Image(
+        width: utilImage.width,
+        height: newHeight,
+        format: utilImage.format,
+        numChannels: utilImage.numChannels,
+        withPalette: utilImage.hasPalette,
+        palette: utilImage.palette,
+      );
+
+      // Fill new image with background color (optional)
+      newImage.clear( ColorUint1.rgba(255, 255, 255, 255));
+
+      // Copy old image pixels to new image
+      for (int y = 0; y < utilImage.height; y++) {
+        for (int x = 0; x < utilImage.width; x++) {
+          final pixel = utilImage.getPixel(x, y);
+          newImage.setPixel(x, y, pixel);
+        }
+      }
+      utilImage = newImage;
     }
   }
 
@@ -242,7 +271,7 @@ class GraphicsPrintUtils {
   //   }
   // }
 
-  void text(String text, {PrintTextStyle? style}) async {
+  void text(String text, {PrintTextStyle? style}) {
     bool rtl = isArabic(text); // Determine direction
     img.BitmapFont textFont = font;
     PrintAlign align = PrintAlign.left;
