@@ -25,9 +25,9 @@ class GraphicsPrintUtils {
   }) {
     utilImage = img.Image(width: paperSize.width, height: 10000);
     fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
-    // if (style != null) {
-    //   font = _getFont(style);
-    // }
+    if (style != null) {
+      font = _getFont(style);
+    }
   }
 
   BitmapFont _getFont(PrintTextStyle style, {bool isArabic = false}) {
