@@ -25,9 +25,9 @@ class GraphicsPrintUtils {
   }) {
     utilImage = img.Image(width: paperSize.width, height: 10000);
     fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
-    if (style != null) {
-      font = _getFont(style);
-    }
+    // if (style != null) {
+    //   font = _getFont(style);
+    // }
   }
 
   BitmapFont _getFont(PrintTextStyle style, {bool isArabic = false}) {
@@ -546,15 +546,20 @@ class GraphicsPrintUtils {
 
   /// Get final image as PNG
   Uint8List build() {
-    final finalImage = copyCrop(
-      utilImage,
-      x: 0,
-      y: 0,
+    final finalImage = img.Image(
       width: paperSize.width,
-      height: runningHeight, // Adjust height as needed
+      height: runningHeight,
     );
+
+    for (int y = 0; y < runningHeight; y++) {
+      for (int x = 0; x < paperSize.width; x++) {
+        finalImage.setPixel(x, y, utilImage.getPixel(x, y));
+      }
+    }
+
     return encodePng(finalImage);
   }
+
 }
 
 class PrintPaperSize {

@@ -71,6 +71,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   drawEscImage()  {
+    final now1=DateTime.now();
+    print("*******************start ${now1}");
     GraphicsPrintUtils escImageUtil = GraphicsPrintUtils(
       paperSize: PrintPaperSize.mm80,
       margin: PrintMargin(left: 10, right: 10),
@@ -107,6 +109,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
     escImageUtil.line();
+
 
     // Add itemized list
     escImageUtil.row(
@@ -298,8 +301,12 @@ class _MyAppState extends State<MyApp> {
     );
 
 
-    escImageUtil.feed(lines: 5);
+    escImageUtil.feed(lines: 1);
     var bytes = escImageUtil.build();
+    final now2=DateTime.now();
+    print("*******************end ${now2}");
+    print("*******************end ${now2.difference(now1)}");
+
     return bytes;
   }
 }
