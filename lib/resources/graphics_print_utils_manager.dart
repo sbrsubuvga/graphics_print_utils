@@ -263,7 +263,6 @@ class GraphicsPrintUtils {
     List<String> words = text.split(' ').where((e) => e.isNotEmpty).toList();
     List<String> currentLineWords = [];
 
-    int totalWidth = 0;
     if (rtl) {
       for (int i = words.length - 1; i >= 0; i--) {
         String tempLine = [...words.sublist(i)].reversed.join(' ');
@@ -298,7 +297,7 @@ class GraphicsPrintUtils {
       xPosition = (paperSize.width - textWidth - marginWidth).round();
     }
 
-    _ensureHeight(runningHeight + textFont.lineHeight + 10);
+    _ensureHeight(runningHeight + textFont.lineHeight);
 
     drawString(
       utilImage,
@@ -308,7 +307,7 @@ class GraphicsPrintUtils {
       y: runningHeight,
       color: textColor,
     );
-    runningHeight += textFont.lineHeight + 10;
+    runningHeight += textFont.lineHeight;
 
     // Remaining text
     int usedCount = currentLineWords.length;
@@ -324,7 +323,7 @@ class GraphicsPrintUtils {
 
   /// Draw horizontal line
   void line({int thickness = 1}) {
-    _ensureHeight(runningHeight + thickness + 20);
+    _ensureHeight(runningHeight + thickness+5);
     fillRect(
       utilImage,
       x1: margin.left,
@@ -333,12 +332,12 @@ class GraphicsPrintUtils {
       y2: runningHeight + thickness,
       color: textColor,
     );
-    runningHeight += thickness + 20;
+    runningHeight += thickness+5;
   }
 
   /// Draw dotted horizontal line
   void dottedLine({int thickness = 1, int dotWidth = 5, int spacing = 3}) {
-    _ensureHeight(thickness + 20);
+    _ensureHeight(thickness + 5);
     int x = margin.left;
     while (x < paperSize.width - margin.right) {
       fillRect(
@@ -351,7 +350,7 @@ class GraphicsPrintUtils {
       );
       x += dotWidth + spacing;
     }
-    runningHeight += thickness + 20;
+    runningHeight += thickness + 5;
   }
 
   /// Draw image (resized)
@@ -367,7 +366,7 @@ class GraphicsPrintUtils {
       height: height ?? subImage.height,
     );
 
-    _ensureHeight(runningHeight + resized.height + 10);
+    _ensureHeight(runningHeight + resized.height + 5);
 
     int posX;
     final posY = runningHeight;
@@ -395,7 +394,7 @@ class GraphicsPrintUtils {
         }
       }
     }
-    runningHeight += (resized.height + 10);
+    runningHeight += (resized.height + 5);
   }
 
   /// Draw QR Code
@@ -494,7 +493,7 @@ class GraphicsPrintUtils {
         maxLines = lines.length;
       }
 
-      _ensureHeight(runningHeight + (maxLines * font.lineHeight) + 10);
+      _ensureHeight(runningHeight + (maxLines * font.lineHeight) );
       img.BitmapFont textFont = font;
       PrintAlign align = PrintAlign.left;
       // Draw each line within the column
@@ -536,7 +535,7 @@ class GraphicsPrintUtils {
       xPosition += columnWidth + spacing;
     }
 
-    runningHeight += (maxLines * font.lineHeight) + 10;
+    runningHeight += (maxLines * font.lineHeight) ;
   }
 
   void feed({int lines = 1}) {

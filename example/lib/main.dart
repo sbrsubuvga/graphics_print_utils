@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
       margin: PrintMargin(left: 10, right: 10),
     );
     // Add store name and header
-    escImageUtil.feed(lines: 2);
+    escImageUtil.feed(lines: 1);
     escImageUtil.text(
       "SuperMart",
       style: PrintTextStyle(
