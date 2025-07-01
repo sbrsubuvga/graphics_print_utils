@@ -272,13 +272,13 @@ class GraphicsPrintUtils {
   // }
 
   void text(String text, {PrintTextStyle? style}) {
-    bool rtl = isArabic(text); // Determine direction
+    bool rtl = isArabic(text);
     img.BitmapFont textFont = font;
     PrintAlign align = PrintAlign.left;
 
     if (rtl) {
+      text = ShapeArabic.shape(text); // Shape only once
       textFont = arabic24;
-      text = ShapeArabic.shape(text); // Shape once
     }
 
     if (style != null) {
@@ -286,67 +286,82 @@ class GraphicsPrintUtils {
       align = style.align;
     }
 
-    int maxWidth = paperSize.width - margin.width;
+    final maxWidth = paperSize.width - margin.width;
+    final words = text.split(' ').where((e) => e.isNotEmpty).toList();
 
-    // Line breaking (reverse for RTL)
-    List<String> words = text.split(' ').where((e) => e.isNotEmpty).toList();
-    List<String> currentLineWords = [];
+    final lines = <String>[];
+    final lineBuilder = <String>[];
 
     if (rtl) {
-      for (int i = words.length - 1; i >= 0; i--) {
-        String tempLine = [...words.sublist(i)].reversed.join(' ');
-        int lineWidth = textFont.getMetrics(tempLine).width;
-        if (lineWidth <= maxWidth) {
-          currentLineWords.insert(0, words[i]);
-        } else {
-          break;
+      for (int i = words.length - 1; i >= 0;) {
+        lineBuilder.clear();
+        int lineWidth = 0;
+
+        while (i >= 0) {
+          lineBuilder.insert(0, words[i]);
+          final testLine = lineBuilder.join(' ');
+          lineWidth = textFont.getMetrics(testLine).width;
+
+          if (lineWidth <= maxWidth) {
+            i--;
+          } else {
+            lineBuilder.removeAt(0); // remove the last word that broke the line
+            break;
+          }
+        }
+
+        if (lineBuilder.isNotEmpty) {
+          lines.add(lineBuilder.join(' '));
         }
       }
     } else {
-      for (String word in words) {
-        String tempLine = (currentLineWords + [word]).join(' ');
-        int lineWidth = textFont.getMetrics(tempLine).width;
-        if (lineWidth <= maxWidth) {
-          currentLineWords.add(word);
-        } else {
-          break;
+      for (int i = 0; i < words.length;) {
+        lineBuilder.clear();
+        int lineWidth = 0;
+
+        while (i < words.length) {
+          lineBuilder.add(words[i]);
+          final testLine = lineBuilder.join(' ');
+          lineWidth = textFont.getMetrics(testLine).width;
+
+          if (lineWidth <= maxWidth) {
+            i++;
+          } else {
+            lineBuilder.removeLast(); // remove the last word that broke the line
+            break;
+          }
+        }
+
+        if (lineBuilder.isNotEmpty) {
+          lines.add(lineBuilder.join(' '));
         }
       }
     }
 
-    String currentLine = currentLineWords.join(' ');
-    int textWidth = textFont.getMetrics(currentLine).width;
+    for (final line in lines) {
+      final textWidth = textFont.getMetrics(line).width;
+      int xPosition = margin.left;
 
-    int xPosition = margin.left;
-    if (align == PrintAlign.center) {
-      xPosition = ((paperSize.width - textWidth) / 2).round();
-    } else if (align == PrintAlign.right) {
-      final marginWidth=rtl?margin.width:margin.left;
+      if (align == PrintAlign.center) {
+        xPosition = ((paperSize.width - textWidth) / 2).round();
+      } else if (align == PrintAlign.right) {
+        final marginWidth = rtl ? margin.width : margin.left;
+        xPosition = (paperSize.width - textWidth - marginWidth).round();
+      }
 
-      xPosition = (paperSize.width - textWidth - marginWidth).round();
-    }
-
-    _ensureHeight(runningHeight + textFont.lineHeight);
-
-    drawString(
-      utilImage,
-      currentLine,
-      font: textFont,
-      x: xPosition,
-      y: runningHeight,
-      color: textColor,
-    );
-    runningHeight += textFont.lineHeight;
-
-    // Remaining text
-    int usedCount = currentLineWords.length;
-    List<String> remainingWords = rtl
-        ? words.sublist(0, words.length - usedCount)
-        : words.sublist(usedCount);
-    if (remainingWords.isNotEmpty) {
-      this.text(remainingWords.join(' '), style: style);
+      _ensureHeight(runningHeight + textFont.lineHeight);
+      drawString(
+        utilImage,
+        line,
+        font: textFont,
+        x: xPosition,
+        y: runningHeight,
+        color: textColor,
+      );
+      runningHeight += textFont.lineHeight;
     }
   }
+
 
 
 
@@ -488,66 +503,175 @@ class GraphicsPrintUtils {
     ); // Your image render function
   }
 
+  // void row({required List<PrintColumn> columns, int spacing = 10}) {
+  //   int xPosition = margin.left;
+  //   int totalWidth =
+  //       paperSize.width - margin.width - (spacing * (columns.length - 1));
+  //   int totalRatio = columns.fold(0, (sum, col) => sum + col.flex);
+  //
+  //   int maxLines = 0;
+  //   for (PrintColumn column in columns) {
+  //     int columnWidth = (totalWidth * (column.flex / totalRatio)).round();
+  //     int textXPosition = xPosition;
+  //     final rowYPosition = runningHeight;
+  //
+  //     // Split text into lines that fit within the column width
+  //     List<String> lines = [];
+  //     String currentLine = '';
+  //     for (String word in column.text.split(' ')) {
+  //       String testLine = currentLine.isEmpty ? word : '$currentLine $word';
+  //       if (font.getMetrics(testLine).width <= columnWidth) {
+  //         currentLine = testLine;
+  //       } else {
+  //         lines.add(currentLine);
+  //         currentLine = word;
+  //       }
+  //     }
+  //     if (currentLine.isNotEmpty) {
+  //       lines.add(currentLine);
+  //     }
+  //
+  //     int tempRunningHeight = rowYPosition;
+  //
+  //     if (maxLines < lines.length) {
+  //       maxLines = lines.length;
+  //     }
+  //
+  //     _ensureHeight(runningHeight + (maxLines * font.lineHeight) );
+  //     img.BitmapFont textFont = font;
+  //     PrintAlign align = PrintAlign.left;
+  //     // Draw each line within the column
+  //     for (String line in lines) {
+  //       final arabic = isArabic(line);
+  //       if (arabic) {
+  //         textFont = arabic24;
+  //         // Step 1: Shape the Arabic characters into their presentation forms.
+  //         // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
+  //         line = ShapeArabic.shape(line);
+  //       }
+  //
+  //       textFont = _getFont(
+  //         column.style,
+  //         isArabic: arabic,
+  //       ); // Make sure _getFont returns a font that handles RTL if you use it
+  //       align = column.style.align;
+  //
+  //       if (align == PrintAlign.center) {
+  //         textXPosition =
+  //             xPosition +
+  //             ((columnWidth - textFont.getMetrics(line).width) / 2).round();
+  //       } else if (align == PrintAlign.right) {
+  //         textXPosition =
+  //             xPosition + (columnWidth - textFont.getMetrics(line).width).round();
+  //       }
+  //
+  //       drawString(
+  //         utilImage,
+  //         line,
+  //         font: textFont,
+  //         x: textXPosition,
+  //         y: tempRunningHeight,
+  //         color: textColor,
+  //       );
+  //       tempRunningHeight += font.lineHeight;
+  //     }
+  //
+  //     xPosition += columnWidth + spacing;
+  //   }
+  //
+  //   runningHeight += (maxLines * font.lineHeight) ;
+  // }
+
   void row({required List<PrintColumn> columns, int spacing = 10}) {
     int xPosition = margin.left;
-    int totalWidth =
-        paperSize.width - margin.width - (spacing * (columns.length - 1));
+    int totalWidth = paperSize.width - margin.width - (spacing * (columns.length - 1));
     int totalRatio = columns.fold(0, (sum, col) => sum + col.flex);
 
     int maxLines = 0;
+
+    // Cache for measured text widths
+    final Map<String, int> metricsCache = {};
+
+    int measureWidth(String text, img.BitmapFont font) {
+      final key = '${font.hashCode}_$text';
+      return metricsCache.putIfAbsent(key, () => font.getMetrics(text).width);
+    }
+
+    final List<_LineBlock> blocks = [];
+
     for (PrintColumn column in columns) {
       int columnWidth = (totalWidth * (column.flex / totalRatio)).round();
       int textXPosition = xPosition;
       final rowYPosition = runningHeight;
 
-      // Split text into lines that fit within the column width
-      List<String> lines = [];
-      String currentLine = '';
-      for (String word in column.text.split(' ')) {
-        String testLine = currentLine.isEmpty ? word : '$currentLine $word';
-        if (font.getMetrics(testLine).width <= columnWidth) {
-          currentLine = testLine;
+      final img.BitmapFont baseFont = _getFont(column.style, isArabic: false);
+      final List<String> words = column.text.split(' ');
+      final List<String> lines = [];
+      final List<int> lineWidths = [];
+
+      StringBuffer currentLine = StringBuffer();
+      for (String word in words) {
+        final testLine = currentLine.isEmpty ? word : '${currentLine.toString()} $word';
+        final testWidth = measureWidth(testLine, baseFont);
+        if (testWidth <= columnWidth) {
+          if (currentLine.isNotEmpty) currentLine.write(' ');
+          currentLine.write(word);
         } else {
-          lines.add(currentLine);
-          currentLine = word;
+          final line = currentLine.toString();
+          lines.add(line);
+          lineWidths.add(measureWidth(line, baseFont));
+          currentLine = StringBuffer(word);
         }
       }
+
       if (currentLine.isNotEmpty) {
-        lines.add(currentLine);
+        final line = currentLine.toString();
+        lines.add(line);
+        lineWidths.add(measureWidth(line, baseFont));
       }
 
-      int tempRunningHeight = rowYPosition;
+      maxLines = maxLines < lines.length ? lines.length : maxLines;
 
-      if (maxLines < lines.length) {
-        maxLines = lines.length;
-      }
+      blocks.add(_LineBlock(
+        column: column,
+        lines: lines,
+        lineWidths: lineWidths,
+        columnWidth: columnWidth,
+        xPosition: xPosition,
+      ));
 
-      _ensureHeight(runningHeight + (maxLines * font.lineHeight) );
-      img.BitmapFont textFont = font;
-      PrintAlign align = PrintAlign.left;
-      // Draw each line within the column
-      for (String line in lines) {
-        final arabic = isArabic(line);
+      xPosition += columnWidth + spacing;
+    }
+
+    _ensureHeight(runningHeight + (maxLines * font.lineHeight));
+
+    for (final block in blocks) {
+      final column = block.column;
+      int tempRunningHeight = runningHeight;
+
+      for (int i = 0; i < block.lines.length; i++) {
+        String line = block.lines[i];
+        int lineWidth = block.lineWidths[i];
+
+        final bool arabic = isArabic(line);
         if (arabic) {
-          textFont = arabic24;
-          // Step 1: Shape the Arabic characters into their presentation forms.
-          // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
           line = ShapeArabic.shape(line);
         }
 
-        textFont = _getFont(
-          column.style,
-          isArabic: arabic,
-        ); // Make sure _getFont returns a font that handles RTL if you use it
-        align = column.style.align;
+        final img.BitmapFont textFont = _getFont(column.style, isArabic: arabic);
+        int textXPosition = block.xPosition;
 
-        if (align == PrintAlign.center) {
-          textXPosition =
-              xPosition +
-              ((columnWidth - textFont.getMetrics(line).width) / 2).round();
-        } else if (align == PrintAlign.right) {
-          textXPosition =
-              xPosition + (columnWidth - textFont.getMetrics(line).width).round();
+        switch (column.style.align) {
+          case PrintAlign.center:
+            textXPosition += ((block.columnWidth - lineWidth) / 2).round();
+            break;
+          case PrintAlign.right:
+            textXPosition += (block.columnWidth - lineWidth).round();
+            break;
+          case PrintAlign.left:
+          default:
+          // no adjustment needed
+            break;
         }
 
         drawString(
@@ -560,16 +684,14 @@ class GraphicsPrintUtils {
         );
         tempRunningHeight += font.lineHeight;
       }
-
-      xPosition += columnWidth + spacing;
     }
 
-    runningHeight += (maxLines * font.lineHeight) ;
+    runningHeight += (maxLines * font.lineHeight);
   }
 
   void feed({int lines = 1}) {
-    _ensureHeight(runningHeight + font.lineHeight + 10);
-    runningHeight += (font.lineHeight + 10) * lines;
+    _ensureHeight(runningHeight + font.lineHeight );
+    runningHeight += (font.lineHeight ) * lines;
   }
 
   /// Get final image as PNG
@@ -642,4 +764,21 @@ class PrintMargin {
 
   const PrintMargin({this.left = 2, this.right = 2});
   int get width => left + right;
+}
+
+
+class _LineBlock {
+  final PrintColumn column;
+  final List<String> lines;
+  final List<int> lineWidths;
+  final int columnWidth;
+  final int xPosition;
+
+  _LineBlock({
+    required this.column,
+    required this.lines,
+    required this.lineWidths,
+    required this.columnWidth,
+    required this.xPosition,
+  });
 }
