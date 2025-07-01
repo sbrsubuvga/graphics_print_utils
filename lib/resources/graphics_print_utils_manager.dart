@@ -59,29 +59,29 @@ class GraphicsPrintUtils {
     return myFont;
   }
 
+  //
+  // void _ensureHeight(int requiredHeight) {
+  //   if (requiredHeight > utilImage.height) {
+  //     final newHeight =
+  //         requiredHeight +
+  //         5000; // Add extra space to minimize frequent resizing
+  //
+  //     final resizedImage = img.Image(width: utilImage.width, height: newHeight);
+  //     fill(resizedImage, color: ColorUint1.rgba(255, 255, 255, 255));
+  //     // Copy the content of the old image to the new resized image
+  //     for (int y = 0; y < utilImage.height; y++) {
+  //       for (int x = 0; x < utilImage.width; x++) {
+  //         resizedImage.setPixel(x, y, utilImage.getPixel(x, y));
+  //       }
+  //     }
+  //     utilImage = resizedImage;
+  //   }
+  // }
+
 
   void _ensureHeight(int requiredHeight) {
     if (requiredHeight > utilImage.height) {
-      final newHeight =
-          requiredHeight +
-          5000; // Add extra space to minimize frequent resizing
-
-      final resizedImage = img.Image(width: utilImage.width, height: newHeight);
-      fill(resizedImage, color: ColorUint1.rgba(255, 255, 255, 255));
-      // Copy the content of the old image to the new resized image
-      for (int y = 0; y < utilImage.height; y++) {
-        for (int x = 0; x < utilImage.width; x++) {
-          resizedImage.setPixel(x, y, utilImage.getPixel(x, y));
-        }
-      }
-      utilImage = resizedImage;
-    }
-  }
-
-
-  void _ensureHeight1(int requiredHeight) {
-    if (requiredHeight > utilImage.height) {
-      final newHeight = requiredHeight + 1000;
+      final newHeight = requiredHeight + 5000;
 
       final newImage = Image(
         width: utilImage.width,
