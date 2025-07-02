@@ -324,7 +324,7 @@ class GraphicsPrintUtils {
 
   /// Draw horizontal line
   void line({int thickness = 1}) {
-    _ensureHeight(runningHeight + thickness+2);
+    _ensureHeight(runningHeight + thickness+5);
     fillRect(
       utilImage,
       x1: margin.left,
@@ -333,12 +333,12 @@ class GraphicsPrintUtils {
       y2: runningHeight + thickness,
       color: textColor,
     );
-    runningHeight += thickness+2;
+    runningHeight += thickness+5;
   }
 
   /// Draw dotted horizontal line
   void dottedLine({int thickness = 1, int dotWidth = 5, int spacing = 3}) {
-    _ensureHeight(thickness+2);
+    _ensureHeight(thickness+5);
     int x = margin.left;
     while (x < paperSize.width - margin.right) {
       fillRect(
@@ -351,7 +351,7 @@ class GraphicsPrintUtils {
       );
       x += dotWidth + spacing;
     }
-    runningHeight += thickness + 2;
+    runningHeight += thickness + 5;
   }
 
   /// Draw image (resized)
