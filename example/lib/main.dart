@@ -108,6 +108,31 @@ class _MyAppState extends State<MyApp> {
         align: PrintAlign.center,
       ),
     );
+
+    // Add itemized list
+    // escImageUtil.row(
+    //   columns: [
+    //     PrintColumn('SL', flex: 4,style:PrintTextStyle(
+    //         align: PrintAlign.left
+    //     )),
+    //     PrintColumn('Item', flex: 6,style:PrintTextStyle(
+    //         align: PrintAlign.left
+    //     )),
+    //     PrintColumn('QTY', flex: 5,style:PrintTextStyle(
+    //       align: PrintAlign.left,
+    //      )
+    //     ),
+    //     PrintColumn('RATE', flex: 6,style:PrintTextStyle(
+    //         align: PrintAlign.left
+    //     )
+    //     ),
+    //     PrintColumn('AMOUNT', flex: 9,style:PrintTextStyle(
+    //         align: PrintAlign.left
+    //     )
+    //     ),
+    //   ],
+    //   spacing: 2
+    // );
     escImageUtil.line();
 
 
