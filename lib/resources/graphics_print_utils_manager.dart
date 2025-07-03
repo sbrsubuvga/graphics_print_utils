@@ -9,15 +9,14 @@ import 'package:image/image.dart';
 import 'package:image/image.dart' as img;
 import 'package:qr/qr.dart';
 
-import '../fonts/arabic_24.dart';
-import '../fonts/lithos_20.dart';
+import '../fonts/lithos_22.dart';
 
 class GraphicsPrintUtils {
   late img.Image utilImage;
   int runningHeight = 0;
   PrintMargin margin = PrintMargin(left: 5, right: 5);
   final PrintPaperSize paperSize;
-  BitmapFont font = lithos20;
+  BitmapFont font = lithos22;
   final textColor = ColorUint1.rgba(0, 0, 0, 255);
 
   GraphicsPrintUtils({
@@ -33,7 +32,7 @@ class GraphicsPrintUtils {
   }
 
   BitmapFont _getFont(PrintTextStyle style, {bool isArabic = false}) {
-    BitmapFont myFont = lithos20;
+    BitmapFont myFont = lithos22;
     // switch (style.fontSize) {
     //   case PrintFontSize.small:
     //     if (isArabic) {
@@ -251,7 +250,7 @@ class GraphicsPrintUtils {
     PrintAlign align = PrintAlign.left;
 
     if (rtl) {
-      textFont = arabic24;
+      textFont = lithos22;
       text = ShapeArabic.shape(text); // Shape once
     }
 
@@ -450,7 +449,7 @@ class GraphicsPrintUtils {
       bcImage,
       barcode,
       data,
-      font: arial24,
+      font: lithos22,
       width: width,
       height: height - 10,
     );
@@ -503,7 +502,7 @@ class GraphicsPrintUtils {
       for (String line in lines) {
         final arabic = isArabic(line);
         if (arabic) {
-          textFont = arabic24;
+          textFont = lithos22; // Use Arabic font for RTL text
           // Step 1: Shape the Arabic characters into their presentation forms.
           // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
           line = ShapeArabic.shape(line);

@@ -26,8 +26,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   initialize()  async{
-    final fontZipLithos_20= await rootBundle.load('assets/lithos_20.zip').then((byteData) => byteData.buffer.asUint8List());
-    Clipboard.setData(ClipboardData(text: fontZipLithos_20.toString()));
+    final fontZipLithos_20= await rootBundle.load('assets/lithos_22.zip').then((byteData) => byteData.buffer.asUint8List());
+    // Clipboard.setData(ClipboardData(text: fontZipLithos_20.toString()));
     // final chFont = img.BitmapFont.fromZip(fontZipLithos_20);
     pngImage =  drawEscImage();
     setState(() {});
