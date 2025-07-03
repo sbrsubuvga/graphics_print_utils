@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:barcode_image/barcode_image.dart';
 import 'package:flutter/services.dart';
+import 'package:graphics_print_utils/fonts/arabic_14.dart';
 import 'package:graphics_print_utils/fonts/arabic_48.dart';
 import 'package:graphics_print_utils/fonts/shape_arabic.dart';
 import 'package:image/image.dart';
@@ -9,13 +10,14 @@ import 'package:image/image.dart' as img;
 import 'package:qr/qr.dart';
 
 import '../fonts/arabic_24.dart';
+import '../fonts/lithos_20.dart';
 
 class GraphicsPrintUtils {
   late img.Image utilImage;
   int runningHeight = 0;
   PrintMargin margin = PrintMargin(left: 5, right: 5);
   final PrintPaperSize paperSize;
-  BitmapFont font = arial24;
+  BitmapFont font = lithos20;
   final textColor = ColorUint1.rgba(0, 0, 0, 255);
 
   GraphicsPrintUtils({
@@ -31,30 +33,30 @@ class GraphicsPrintUtils {
   }
 
   BitmapFont _getFont(PrintTextStyle style, {bool isArabic = false}) {
-    BitmapFont myFont = arial14;
-    switch (style.fontSize) {
-      case PrintFontSize.small:
-        if (isArabic) {
-          myFont = arial14;
-        } else {
-          myFont = arial14;
-        }
-        break;
-      case PrintFontSize.medium:
-        if (isArabic) {
-          myFont = arabic24;
-        } else {
-          myFont = arial24;
-        }
-        break;
-      case PrintFontSize.large:
-        if (isArabic) {
-          myFont = arabic48;
-        } else {
-          myFont = arial48;
-        }
-        break;
-    }
+    BitmapFont myFont = lithos20;
+    // switch (style.fontSize) {
+    //   case PrintFontSize.small:
+    //     if (isArabic) {
+    //       myFont = lithos20;
+    //     } else {
+    //       myFont = lithos20;
+    //     }
+    //     break;
+    //   case PrintFontSize.medium:
+    //     if (isArabic) {
+    //       myFont = lithos20;
+    //     } else {
+    //       myFont = lithos20;
+    //     }
+    //     break;
+    //   case PrintFontSize.large:
+    //     if (isArabic) {
+    //       myFont = lithos20;
+    //     } else {
+    //       myFont = lithos20;
+    //     }
+    //     break;
+    // }
     myFont.bold = style.bold;
     return myFont;
   }
