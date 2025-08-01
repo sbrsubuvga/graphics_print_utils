@@ -26,7 +26,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   initialize()  async{
-    final fontZipLithos_20= await rootBundle.load('assets/lithos_22.zip').then((byteData) => byteData.buffer.asUint8List());
+    print("*******************start init***********");
+    // final fontZipLithos_20= await rootBundle.load('assets/lithos_28_bold.zip').then((byteData) => byteData.buffer.asUint8List());
     // Clipboard.setData(ClipboardData(text: fontZipLithos_20.toString()));
     // final chFont = img.BitmapFont.fromZip(fontZipLithos_20);
     pngImage =  drawEscImage();
@@ -112,30 +113,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
 
-    // Add itemized list
-    // escImageUtil.row(
-    //   columns: [
-    //     PrintColumn('SL', flex: 4,style:PrintTextStyle(
-    //         align: PrintAlign.left
-    //     )),
-    //     PrintColumn('Item', flex: 6,style:PrintTextStyle(
-    //         align: PrintAlign.left
-    //     )),
-    //     PrintColumn('QTY', flex: 5,style:PrintTextStyle(
-    //       align: PrintAlign.left,
-    //      )
-    //     ),
-    //     PrintColumn('RATE', flex: 6,style:PrintTextStyle(
-    //         align: PrintAlign.left
-    //     )
-    //     ),
-    //     PrintColumn('AMOUNT', flex: 9,style:PrintTextStyle(
-    //         align: PrintAlign.left
-    //     )
-    //     ),
-    //   ],
-    //   spacing: 2
-    // );
+
     escImageUtil.line();
 
 
@@ -291,16 +269,6 @@ class _MyAppState extends State<MyApp> {
       style: PrintTextStyle(align: PrintAlign.center),
     );
 
-    // final fontZipCh = await rootBundle.load('assets/ch_24_ch.zip').then((byteData) => byteData.buffer.asUint8List());
-    // final chFont = img.BitmapFont.fromZip(fontZipCh);
-    // escImageUtil.textArabic(
-    //   "感谢您的光临！", // Chinese: Thank you for shopping with us!
-    //   chFont,
-    //   style: PrintTextStyle(
-    //     fontSize: PrintFontSize.small,
-    //     align: PrintAlign.center,
-    //   ),
-    // );
     escImageUtil.text(
       "Merci pour vos achats !", // French: Thank you for shopping with us!
       style: PrintTextStyle(align: PrintAlign.center),
@@ -310,10 +278,6 @@ class _MyAppState extends State<MyApp> {
       style: PrintTextStyle(align: PrintAlign.center),
     );
 
-    // final fontZipFile2 = await rootBundle.load('assets/noto_serif_48.zip').then((byteData) => byteData.buffer.asUint8List());
-    //    final arbicFont = img.BitmapFont.fromZip(fontZipFile2);
-
-    // print(fontZipFile2);
     escImageUtil.text(
       "   السلام عليكم  ", // Arabic: Peace be upon you!//لسلام عليكم
       style: PrintTextStyle(align: PrintAlign.center),
