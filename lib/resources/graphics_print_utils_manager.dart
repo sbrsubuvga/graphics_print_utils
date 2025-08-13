@@ -148,7 +148,7 @@ class GraphicsPrintUtils {
       y: runningHeight,
       color: textColor,
     );
-    runningHeight += textFont.lineHeight+(textFont.lineHeight~/10);
+    runningHeight += textFont.lineHeight+(textFont.lineHeight~/12);
 
     // Remaining text
     int usedCount = currentLineWords.length;
@@ -371,13 +371,13 @@ class GraphicsPrintUtils {
           y: tempRunningHeight,
           color: textColor,
         );
-        tempRunningHeight += font.lineHeight+(font.lineHeight~/10);
+        tempRunningHeight += font.lineHeight+(font.lineHeight~/12);
       }
 
       xPosition += columnWidth + spacing;
     }
 
-    runningHeight += (maxLines * font.lineHeight)+ (font.lineHeight~/10);
+    runningHeight += (maxLines * font.lineHeight)+ (font.lineHeight~/12);
   }
 
   void feed({int lines = 1}) {
