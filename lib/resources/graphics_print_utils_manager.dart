@@ -3,6 +3,10 @@ import 'dart:typed_data';
 import 'package:barcode_image/barcode_image.dart';
 import 'package:flutter/services.dart';
 import 'package:graphics_print_utils/fonts/lithos_22_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_24.dart';
+import 'package:graphics_print_utils/fonts/lithos_24_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_26.dart';
+import 'package:graphics_print_utils/fonts/lithos_26_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_28_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_34_bold.dart';
 import 'package:graphics_print_utils/fonts/shape_arabic.dart';
@@ -37,15 +41,15 @@ class GraphicsPrintUtils {
     BitmapFont myFont = lithos22;
     switch (style.fontSize) {
       case PrintFontSize.small:
-        myFont = lithos22;
+        myFont = lithos24;
         if(style.bold){
-          myFont=lithos22Bold;
+          myFont=lithos24Bold;
         }
         break;
       case PrintFontSize.medium:
-        myFont = lithos28;
+        myFont = lithos26;
         if(style.bold){
-          myFont=lithos28Bold;
+          myFont=lithos26Bold;
         }
         break;
       case PrintFontSize.large:
