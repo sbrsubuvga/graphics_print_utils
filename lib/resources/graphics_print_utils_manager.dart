@@ -9,6 +9,7 @@ import 'package:graphics_print_utils/fonts/lithos_26.dart';
 import 'package:graphics_print_utils/fonts/lithos_26_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_28_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_34_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_40_bold.dart';
 import 'package:graphics_print_utils/fonts/shape_arabic.dart';
 import 'package:image/image.dart';
 import 'package:image/image.dart' as img;
@@ -55,7 +56,7 @@ class GraphicsPrintUtils {
       case PrintFontSize.large:
         myFont = lithos34Bold;
         if(style.bold){
-          myFont=lithos34Bold;
+          myFont=lithos40Bold;
         }
         break;
     }
