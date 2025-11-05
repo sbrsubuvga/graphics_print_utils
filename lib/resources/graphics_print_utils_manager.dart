@@ -2,12 +2,13 @@ import 'dart:typed_data';
 
 import 'package:barcode_image/barcode_image.dart';
 import 'package:flutter/services.dart';
+import 'package:graphics_print_utils/fonts/lithos_18.dart';
+import 'package:graphics_print_utils/fonts/lithos_18_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_22_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_24.dart';
 import 'package:graphics_print_utils/fonts/lithos_24_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_26.dart';
 import 'package:graphics_print_utils/fonts/lithos_26_bold.dart';
-import 'package:graphics_print_utils/fonts/lithos_28_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_34_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_40_bold.dart';
 import 'package:graphics_print_utils/fonts/shape_arabic.dart';
@@ -16,7 +17,6 @@ import 'package:image/image.dart' as img;
 import 'package:qr/qr.dart';
 
 import '../fonts/lithos_22.dart';
-import '../fonts/lithos_28.dart';
 
 class GraphicsPrintUtils {
   late img.Image utilImage;
@@ -34,23 +34,32 @@ class GraphicsPrintUtils {
     utilImage = img.Image(width: paperSize.width, height: 10000);
     fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
     if (style != null) {
-      font = _getFont(style);
+      font = _getFont(style, paperSize);
     }
   }
 
-  BitmapFont _getFont(PrintTextStyle style) {
+  BitmapFont _getFont(PrintTextStyle style,PrintPaperSize paperSize){
+    if(paperSize == PrintPaperSize.mm58){
+      return _getFont2(style);
+    }
+    else{
+      return _getFont3(style);
+    }
+  }
+
+  BitmapFont _getFont3(PrintTextStyle style) {
     BitmapFont myFont = lithos22;
     switch (style.fontSize) {
       case PrintFontSize.small:
-        myFont = lithos24;
+        myFont = lithos22;
         if(style.bold){
-          myFont=lithos24Bold;
+          myFont=lithos22Bold;
         }
         break;
       case PrintFontSize.medium:
-        myFont = lithos26;
+        myFont = lithos24;
         if(style.bold){
-          myFont=lithos26Bold;
+          myFont=lithos24Bold;
         }
         break;
       case PrintFontSize.large:
@@ -62,7 +71,31 @@ class GraphicsPrintUtils {
     }
     return myFont;
   }
-
+  
+  BitmapFont _getFont2(PrintTextStyle style) {
+    BitmapFont myFont = lithos22;
+    switch (style.fontSize) {
+      case PrintFontSize.small:
+        myFont = lithos18;
+        if(style.bold){
+          myFont=lithos18Bold;
+        }
+        break;
+      case PrintFontSize.medium:
+        myFont = lithos22;
+        if(style.bold){
+          myFont=lithos22Bold;
+        }
+        break;
+      case PrintFontSize.large:
+        myFont = lithos22Bold;
+        if(style.bold){
+          myFont=lithos26Bold;
+        }
+        break;
+    }
+    return myFont;
+  }
 
   void _ensureHeight(int requiredHeight) {
     if (requiredHeight > utilImage.height) {
@@ -100,7 +133,7 @@ class GraphicsPrintUtils {
     }
 
     if (style != null) {
-      textFont = _getFont(style);
+      textFont = _getFont(style, paperSize);
       align = style.align;
     }
 
@@ -356,7 +389,7 @@ class GraphicsPrintUtils {
         }
 
         textFont = _getFont(
-          column.style,
+          column.style,paperSize
         ); // Make sure _getFont returns a font that handles RTL if you use it
         align = column.style.align;
 
@@ -430,7 +463,7 @@ class PrintTextStyle {
   final bool bold;
 
   const PrintTextStyle({
-    this.fontSize = PrintFontSize.medium,
+    this.fontSize = PrintFontSize.small,
     this.align = PrintAlign.left,
     this.bold = false,
   });
