@@ -341,14 +341,17 @@ class GraphicsPrintUtils {
     ); // Your image render function
   }
 
-  void row({required List<PrintColumn> columns, int spacing = 10}) {
+ void row({required List<PrintColumn> columns, int spacing = 10}) {
     int xPosition = margin.left;
     int totalWidth =
         paperSize.width - margin.width - (spacing * (columns.length - 1));
     int totalRatio = columns.fold(0, (sum, col) => sum + col.flex);
 
     int maxLines = 0;
+    img.BitmapFont columnFont = font;
+
     for (PrintColumn column in columns) {
+      columnFont = _getFont(column.style, paperSize);
       int columnWidth = (totalWidth * (column.flex / totalRatio)).round();
       int textXPosition = xPosition;
       final rowYPosition = runningHeight;
@@ -358,7 +361,7 @@ class GraphicsPrintUtils {
       String currentLine = '';
       for (String word in column.text.split(' ')) {
         String testLine = currentLine.isEmpty ? word : '$currentLine $word';
-        if (font.getMetrics(testLine).width <= columnWidth) {
+        if (columnFont.getMetrics(testLine).width <= columnWidth) {
           currentLine = testLine;
         } else {
           lines.add(currentLine);
@@ -375,8 +378,8 @@ class GraphicsPrintUtils {
         maxLines = lines.length;
       }
 
-      _ensureHeight(runningHeight + (maxLines * font.lineHeight) );
-      img.BitmapFont textFont = font;
+      _ensureHeight(runningHeight + (maxLines * columnFont.lineHeight) );
+      img.BitmapFont textFont = columnFont;
       PrintAlign align = PrintAlign.left;
       // Draw each line within the column
       for (String line in lines) {
@@ -386,11 +389,10 @@ class GraphicsPrintUtils {
           // Step 1: Shape the Arabic characters into their presentation forms.
           // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
           line = ShapeArabic.shape(line);
+        } else {
+          textFont = _getFont(
+              column.style, paperSize); // Make sure _getFont returns a font that handles RTL if you use it
         }
-
-        textFont = _getFont(
-          column.style,paperSize
-        ); // Make sure _getFont returns a font that handles RTL if you use it
         align = column.style.align;
 
         if (align == PrintAlign.center) {
@@ -410,13 +412,13 @@ class GraphicsPrintUtils {
           y: tempRunningHeight,
           color: textColor,
         );
-        tempRunningHeight += font.lineHeight+(font.lineHeight~/12);
+        tempRunningHeight += columnFont.lineHeight+(columnFont.lineHeight~/12);
       }
 
       xPosition += columnWidth + spacing;
     }
 
-    runningHeight += (maxLines * font.lineHeight)+ (font.lineHeight~/12);
+    runningHeight += (maxLines * columnFont.lineHeight) + (columnFont.lineHeight ~/ 12);
   }
 
   void feed({int lines = 1}) {
