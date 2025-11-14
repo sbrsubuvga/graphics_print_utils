@@ -2,20 +2,21 @@ import 'dart:typed_data';
 
 import 'package:barcode_image/barcode_image.dart';
 import 'package:flutter/services.dart';
+import 'package:graphics_print_utils/fonts/lithos_18.dart';
+import 'package:graphics_print_utils/fonts/lithos_18_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_22_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_24.dart';
 import 'package:graphics_print_utils/fonts/lithos_24_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_26.dart';
 import 'package:graphics_print_utils/fonts/lithos_26_bold.dart';
-import 'package:graphics_print_utils/fonts/lithos_28_bold.dart';
 import 'package:graphics_print_utils/fonts/lithos_34_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_40_bold.dart';
 import 'package:graphics_print_utils/fonts/shape_arabic.dart';
 import 'package:image/image.dart';
 import 'package:image/image.dart' as img;
 import 'package:qr/qr.dart';
 
 import '../fonts/lithos_22.dart';
-import '../fonts/lithos_28.dart';
 
 class GraphicsPrintUtils {
   late img.Image utilImage;
@@ -33,35 +34,68 @@ class GraphicsPrintUtils {
     utilImage = img.Image(width: paperSize.width, height: 10000);
     fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
     if (style != null) {
-      font = _getFont(style);
+      font = _getFont(style, paperSize);
     }
   }
 
-  BitmapFont _getFont(PrintTextStyle style) {
+  BitmapFont _getFont(PrintTextStyle style,PrintPaperSize paperSize){
+    if(paperSize == PrintPaperSize.mm58){
+      return _getFont2(style);
+    }
+    else{
+      return _getFont3(style);
+    }
+  }
+
+  BitmapFont _getFont3(PrintTextStyle style) {
     BitmapFont myFont = lithos22;
     switch (style.fontSize) {
       case PrintFontSize.small:
+        myFont = lithos22;
+        if(style.bold){
+          myFont=lithos22Bold;
+        }
+        break;
+      case PrintFontSize.medium:
         myFont = lithos24;
         if(style.bold){
           myFont=lithos24Bold;
         }
         break;
-      case PrintFontSize.medium:
-        myFont = lithos26;
-        if(style.bold){
-          myFont=lithos26Bold;
-        }
-        break;
       case PrintFontSize.large:
         myFont = lithos34Bold;
         if(style.bold){
-          myFont=lithos34Bold;
+          myFont=lithos40Bold;
         }
         break;
     }
     return myFont;
   }
-
+  
+  BitmapFont _getFont2(PrintTextStyle style) {
+    BitmapFont myFont = lithos22;
+    switch (style.fontSize) {
+      case PrintFontSize.small:
+        myFont = lithos18;
+        if(style.bold){
+          myFont=lithos18Bold;
+        }
+        break;
+      case PrintFontSize.medium:
+        myFont = lithos22;
+        if(style.bold){
+          myFont=lithos22Bold;
+        }
+        break;
+      case PrintFontSize.large:
+        myFont = lithos22Bold;
+        if(style.bold){
+          myFont=lithos26Bold;
+        }
+        break;
+    }
+    return myFont;
+  }
 
   void _ensureHeight(int requiredHeight) {
     if (requiredHeight > utilImage.height) {
@@ -99,7 +133,7 @@ class GraphicsPrintUtils {
     }
 
     if (style != null) {
-      textFont = _getFont(style);
+      textFont = _getFont(style, paperSize);
       align = style.align;
     }
 
@@ -307,14 +341,17 @@ class GraphicsPrintUtils {
     ); // Your image render function
   }
 
-  void row({required List<PrintColumn> columns, int spacing = 10}) {
+ void row({required List<PrintColumn> columns, int spacing = 10}) {
     int xPosition = margin.left;
     int totalWidth =
         paperSize.width - margin.width - (spacing * (columns.length - 1));
     int totalRatio = columns.fold(0, (sum, col) => sum + col.flex);
 
     int maxLines = 0;
+    img.BitmapFont columnFont = font;
+
     for (PrintColumn column in columns) {
+      columnFont = _getFont(column.style, paperSize);
       int columnWidth = (totalWidth * (column.flex / totalRatio)).round();
       int textXPosition = xPosition;
       final rowYPosition = runningHeight;
@@ -324,7 +361,7 @@ class GraphicsPrintUtils {
       String currentLine = '';
       for (String word in column.text.split(' ')) {
         String testLine = currentLine.isEmpty ? word : '$currentLine $word';
-        if (font.getMetrics(testLine).width <= columnWidth) {
+        if (columnFont.getMetrics(testLine).width <= columnWidth) {
           currentLine = testLine;
         } else {
           lines.add(currentLine);
@@ -341,8 +378,8 @@ class GraphicsPrintUtils {
         maxLines = lines.length;
       }
 
-      _ensureHeight(runningHeight + (maxLines * font.lineHeight) );
-      img.BitmapFont textFont = font;
+      _ensureHeight(runningHeight + (maxLines * columnFont.lineHeight) );
+      img.BitmapFont textFont = columnFont;
       PrintAlign align = PrintAlign.left;
       // Draw each line within the column
       for (String line in lines) {
@@ -352,11 +389,10 @@ class GraphicsPrintUtils {
           // Step 1: Shape the Arabic characters into their presentation forms.
           // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
           line = ShapeArabic.shape(line);
+        } else {
+          textFont = _getFont(
+              column.style, paperSize); // Make sure _getFont returns a font that handles RTL if you use it
         }
-
-        textFont = _getFont(
-          column.style,
-        ); // Make sure _getFont returns a font that handles RTL if you use it
         align = column.style.align;
 
         if (align == PrintAlign.center) {
@@ -376,13 +412,13 @@ class GraphicsPrintUtils {
           y: tempRunningHeight,
           color: textColor,
         );
-        tempRunningHeight += font.lineHeight+(font.lineHeight~/12);
+        tempRunningHeight += columnFont.lineHeight+(columnFont.lineHeight~/12);
       }
 
       xPosition += columnWidth + spacing;
     }
 
-    runningHeight += (maxLines * font.lineHeight)+ (font.lineHeight~/12);
+    runningHeight += (maxLines * columnFont.lineHeight) + (columnFont.lineHeight ~/ 12);
   }
 
   void feed({int lines = 1}) {
@@ -429,7 +465,7 @@ class PrintTextStyle {
   final bool bold;
 
   const PrintTextStyle({
-    this.fontSize = PrintFontSize.medium,
+    this.fontSize = PrintFontSize.small,
     this.align = PrintAlign.left,
     this.bold = false,
   });
