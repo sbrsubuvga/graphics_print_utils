@@ -60,7 +60,8 @@ class _MyAppState extends State<MyApp> {
             onPressed: () async {
               final profile = await CapabilityProfile.load();
               final generator = Generator(PaperSize.mm80, profile);
-              List<int> bytes = generator.image(img.decodeImage(pngImage)!);
+              final bytes = generator.image(img.decodeImage(pngImage)!);
+              debugPrint('Generated ${bytes.length} ESC/POS bytes');
 
               /// You can use the bytes to print using your printer
             },
@@ -294,11 +295,14 @@ class _MyAppState extends State<MyApp> {
 
 
     escImageUtil.feed(lines: 1);
+
+    final buildStart=DateTime.now();
     var bytes = escImageUtil.build();
     final now2=DateTime.now();
-    print("*******************end ${now2}");
-    print("*******************end ${now2.difference(now1)}");
+    print("*******************build time ${buildStart.difference(now2)}");
+    print("*******************total time ${now2.difference(now1)}");
 
     return bytes;
   }
+
 }
