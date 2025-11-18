@@ -197,7 +197,8 @@ BitmapFont _getFont(PrintTextStyle style, PrintPaperSize paperSize) {
 
 
   void text(String text, {PrintTextStyle? style}) {
-     if (text.isEmpty) return; // Early exit
+    if (text.isEmpty) return; // Early exit
+     
      
     bool rtl = isArabic(text); // Determine direction
     img.BitmapFont textFont = font;
@@ -306,7 +307,7 @@ if (lastValidCount == 0) {
       this.text(remainingWords.join(' '), style: style);
     }
   }
-  }
+}
 
 
 
@@ -381,7 +382,7 @@ if (lastValidCount == 0) {
   }
 
   /// Draw QR Code - Optimized to use fillRect instead of nested pixel loops
-  qr(String data, {int qrSize = 150, PrintAlign align = PrintAlign.center}) {
+  void qr(String data, {int qrSize = 150, PrintAlign align = PrintAlign.center}) {
     final qr = QrCode.fromData(
       data: data,
       errorCorrectLevel: QrErrorCorrectLevel.M,
@@ -423,23 +424,23 @@ if (lastValidCount == 0) {
     int height = 120,
     PrintAlign align = PrintAlign.center,
   }) {
-    // final bcImage = img.Image(width: width, height: height);
-    // fill(bcImage, color: ColorRgb8(255, 255, 255));
-    // Barcode.code128();
-    // drawBarcode(
-    //   bcImage,
-    //   barcode,
-    //   data,
-    //   font: lithos22,
-    //   width: width,
-    //   height: height - 10,
-    // );
-    // image(
-    //   bcImage,
-    //   align: align,
-    //   width: width,
-    //   height: height,
-    // ); // Your image render function
+    final bcImage = img.Image(width: width, height: height);
+    fill(bcImage, color: ColorRgb8(255, 255, 255));
+    Barcode.code128();
+    drawBarcode(
+      bcImage,
+      barcode,
+      data,
+      font: lithos22,
+      width: width,
+      height: height - 10,
+    );
+    image(
+      bcImage,
+      align: align,
+      width: width,
+      height: height,
+    ); // Your image render function
   }
 
  void row({required List<PrintColumn> columns, int spacing = 10}) {
