@@ -24,87 +24,164 @@ class GraphicsPrintUtils {
   final PrintPaperSize paperSize;
   BitmapFont font = lithos22;
   final textColor = ColorUint1.rgba(0, 0, 0, 255);
+  
+  // Dynamic height management constants
+  static const int _initialHeight = 5000; // Start with smaller initial height
+  static const double _growthFactor = 1.5; // Grow by 50% each time (exponential growth)
+  static const int _minGrowth = 200; // Minimum growth amount
+
+
+// Optimized font lookup with map
+static final Map<String, BitmapFont Function()> _fontMap58 = {
+  'small_false': () => lithos18,
+  'small_true': () => lithos18Bold,
+  'medium_false': () => lithos22,
+  'medium_true': () => lithos22Bold,
+  'large_false': () => lithos22Bold,
+  'large_true': () => lithos26Bold,
+};
+
+static final Map<String, BitmapFont Function()> _fontMap80 = {
+  'small_false': () => lithos22,
+  'small_true': () => lithos22Bold,
+  'medium_false': () => lithos24,
+  'medium_true': () => lithos24Bold,
+  'large_false': () => lithos34Bold,
+  'large_true': () => lithos40Bold,
+};
+
+  // GraphicsPrintUtils({
+  //   this.paperSize = PrintPaperSize.mm80,
+  //   this.margin = const PrintMargin(),
+  //   PrintTextStyle? style = const PrintTextStyle(),
+  // }) {
+  //   // Start with a smaller initial height, will grow dynamically as needed
+  //   utilImage = img.Image(width: paperSize.width, height: _initialHeight);
+  //   fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
+  //   if (style != null) {
+  //     font = _getFont(style, paperSize);
+  //   }
+  // }
 
   GraphicsPrintUtils({
-    this.paperSize = PrintPaperSize.mm80,
-    this.margin = const PrintMargin(),
-    PrintTextStyle? style = const PrintTextStyle(),
-  }) {
-    utilImage = img.Image(width: paperSize.width, height: 10000);
-    fill(utilImage, color: ColorUint1.rgba(255, 255, 255, 255));
-    if (style != null) {
-      font = _getFont(style, paperSize);
-    }
-  }
-
-  BitmapFont _getFont(PrintTextStyle style,PrintPaperSize paperSize){
-    if(paperSize == PrintPaperSize.mm58){
-      return _getFont2(style);
-    }
-    else{
-      return _getFont3(style);
-    }
-  }
-
-  BitmapFont _getFont3(PrintTextStyle style) {
-    BitmapFont myFont = lithos22;
-    switch (style.fontSize) {
-      case PrintFontSize.small:
-        myFont = lithos22;
-        if(style.bold){
-          myFont=lithos22Bold;
-        }
-        break;
-      case PrintFontSize.medium:
-        myFont = lithos24;
-        if(style.bold){
-          myFont=lithos24Bold;
-        }
-        break;
-      case PrintFontSize.large:
-        myFont = lithos34Bold;
-        if(style.bold){
-          myFont=lithos40Bold;
-        }
-        break;
-    }
-    return myFont;
-  }
+  this.paperSize = PrintPaperSize.mm80,
+  this.margin = const PrintMargin(),
+  PrintTextStyle? style = const PrintTextStyle(),
+}) {
+  // Create image with white background in one step
+  utilImage = img.Image(
+    width: paperSize.width, 
+    height: _initialHeight,
+    numChannels: 4, // RGBA
+  );
   
-  BitmapFont _getFont2(PrintTextStyle style) {
-    BitmapFont myFont = lithos22;
-    switch (style.fontSize) {
-      case PrintFontSize.small:
-        myFont = lithos18;
-        if(style.bold){
-          myFont=lithos18Bold;
-        }
-        break;
-      case PrintFontSize.medium:
-        myFont = lithos22;
-        if(style.bold){
-          myFont=lithos22Bold;
-        }
-        break;
-      case PrintFontSize.large:
-        myFont = lithos22Bold;
-        if(style.bold){
-          myFont=lithos26Bold;
-        }
-        break;
-    }
-    return myFont;
+  // Optimized: fill only once during initialization
+  img.fillRect(
+    utilImage,
+    x1: 0,
+    y1: 0,
+    x2: paperSize.width,
+    y2: _initialHeight,
+    color: img.ColorRgba8(255, 255, 255, 255),
+  );
+  
+  if (style != null) {
+    font = _getFont(style, paperSize);
   }
+}
 
-  void _ensureHeight(int requiredHeight) {
+BitmapFont _getFont(PrintTextStyle style, PrintPaperSize paperSize) { 
+  final map = paperSize == PrintPaperSize.mm58 ? _fontMap58 : _fontMap80;
+  final key = '${style.fontSize.name}_${style.bold}';
+  return map[key]?.call() ?? lithos22;
+}
+
+  // BitmapFont _getFont(PrintTextStyle style,PrintPaperSize paperSize){
+  //   if(paperSize == PrintPaperSize.mm58){
+  //     return _getFont2(style);
+  //   }
+  //   else{
+  //     return _getFont3(style);
+  //   }
+  // }
+
+  // BitmapFont _getFont3(PrintTextStyle style) {
+  //   BitmapFont myFont = lithos22;
+  //   switch (style.fontSize) {
+  //     case PrintFontSize.small:
+  //       myFont = lithos22;
+  //       if(style.bold){
+  //         myFont=lithos22Bold;
+  //       }
+  //       break;
+  //     case PrintFontSize.medium:
+  //       myFont = lithos24;
+  //       if(style.bold){
+  //         myFont=lithos24Bold;
+  //       }
+  //       break;
+  //     case PrintFontSize.large:
+  //       myFont = lithos34Bold;
+  //       if(style.bold){
+  //         myFont=lithos40Bold;
+  //       }
+  //       break;
+  //   }
+  //   return myFont;
+  // }
+  
+  // BitmapFont _getFont2(PrintTextStyle style) {
+  //   BitmapFont myFont = lithos22;
+  //   switch (style.fontSize) {
+  //     case PrintFontSize.small:
+  //       myFont = lithos18;
+  //       if(style.bold){
+  //         myFont=lithos18Bold;
+  //       }
+  //       break;
+  //     case PrintFontSize.medium:
+  //       myFont = lithos22;
+  //       if(style.bold){
+  //         myFont=lithos22Bold;
+  //       }
+  //       break;
+  //     case PrintFontSize.large:
+  //       myFont = lithos22Bold;
+  //       if(style.bold){
+  //         myFont=lithos26Bold;
+  //       }
+  //       break;
+  //   }
+  //   return myFont;
+  // }
+
+
+  void _ensureHeight(int requiredHeight) 
+  {
     if (requiredHeight <= utilImage.height) {
       return;
     }
-
-    final newHeight = requiredHeight + 10000;
-    final resizedImage = img.Image(width: utilImage.width, height: newHeight);
+    print("******************* ensureHeight ${requiredHeight} ${utilImage.height}");
+    
+    // Exponential growth strategy: grow by growthFactor, but ensure minimum growth
+    // This reduces the number of resize operations while avoiding excessive memory usage
+    final currentHeight = utilImage.height;
+    final growthAmount = (_initialHeight * _growthFactor).round() - _initialHeight;
+    final minGrowth = _minGrowth;
+    final actualGrowth = growthAmount > minGrowth ? growthAmount : minGrowth;
+    
+    // Calculate new height: ensure it's at least requiredHeight, but grow more to reduce future resizes
+    final newHeight = (requiredHeight > currentHeight + actualGrowth) 
+        ? requiredHeight + actualGrowth  // If required is much larger, grow more
+        : (currentHeight * _growthFactor).round(); // Otherwise use exponential growth
+    
+    final resizedImage = img.Image(
+      width: utilImage.width, 
+      height: newHeight,
+    );
     fill(resizedImage, color: ColorUint1.rgba(255, 255, 255, 255));
-
+    
+    // Copy existing content to new image
     img.compositeImage(
       resizedImage,
       utilImage,
@@ -113,7 +190,6 @@ class GraphicsPrintUtils {
     utilImage = resizedImage;
   }
 
-
   bool isArabic(String text) {
     final arabicRegex = RegExp(r'[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]');
     return arabicRegex.hasMatch(text);
@@ -121,6 +197,8 @@ class GraphicsPrintUtils {
 
 
   void text(String text, {PrintTextStyle? style}) {
+     if (text.isEmpty) return; // Early exit
+     
     bool rtl = isArabic(text); // Determine direction
     img.BitmapFont textFont = font;
     PrintAlign align = PrintAlign.left;
@@ -138,63 +216,96 @@ class GraphicsPrintUtils {
     int maxWidth = paperSize.width - margin.width;
 
     // Line breaking (reverse for RTL)
-    List<String> words = text.split(' ').where((e) => e.isNotEmpty).toList();
-    List<String> currentLineWords = [];
+     // Split words once
+  final words = text.split(' ');
+  if (words.isEmpty) return;
+  // Remove empty strings efficiently
+  final nonEmptyWords = words.where((e) => e.isNotEmpty).toList(growable: false);
+  if (nonEmptyWords.isEmpty) return;
+  
+  // Build line more efficiently
+  final buffer = StringBuffer();
+  int wordCount = 0;
+  int lastValidWidth = 0;
+  int lastValidCount = 0;
 
-    if (rtl) {
-      for (int i = words.length - 1; i >= 0; i--) {
-        String tempLine = [...words.sublist(i)].reversed.join(' ');
-        int lineWidth = textFont.getMetrics(tempLine).width;
-        if (lineWidth <= maxWidth) {
-          currentLineWords.insert(0, words[i]);
-        } else {
-          break;
-        }
-      }
-    } else {
-      for (String word in words) {
-        String tempLine = (currentLineWords + [word]).join(' ');
-        int lineWidth = textFont.getMetrics(tempLine).width;
-        if (lineWidth <= maxWidth) {
-          currentLineWords.add(word);
-        } else {
-          break;
-        }
+ if (rtl) {
+    // RTL: iterate backwards
+    for (int i = nonEmptyWords.length - 1; i >= 0; i--) {
+      if (buffer.isNotEmpty) buffer.write(' ');
+      buffer.write(nonEmptyWords[i]);
+      
+      final lineWidth = textFont.getMetrics(buffer.toString()).width;
+      
+      if (lineWidth <= maxWidth) {
+        lastValidWidth = lineWidth;
+        lastValidCount = ++wordCount;
+      } else {
+        break;
       }
     }
-
-    String currentLine = currentLineWords.join(' ');
-    int textWidth = textFont.getMetrics(currentLine).width;
-
-    int xPosition = margin.left;
-    if (align == PrintAlign.center) {
-      xPosition = ((paperSize.width - textWidth) / 2).round();
-    } else if (align == PrintAlign.right) {
-      final marginWidth=rtl?margin.width:margin.left;
-
-      xPosition = (paperSize.width - textWidth - marginWidth).round();
+  } else {
+    // LTR: iterate forward
+    for (int i = 0; i < nonEmptyWords.length; i++) {
+      if (buffer.isNotEmpty) buffer.write(' ');
+      buffer.write(nonEmptyWords[i]);
+      
+      final lineWidth = textFont.getMetrics(buffer.toString()).width;
+      
+      if (lineWidth <= maxWidth) {
+        lastValidWidth = lineWidth;
+        lastValidCount = ++wordCount;
+      } else {
+        break;
+      }
     }
+  }
+if (lastValidCount == 0) {
+    // Word too long, force it
+    lastValidCount = 1;
+    lastValidWidth = textFont.getMetrics(nonEmptyWords[0]).width;
+  }
+  
+  // Build final line string
+  final currentLine = rtl 
+      ? nonEmptyWords.sublist(nonEmptyWords.length - lastValidCount).reversed.join(' ')
+      : nonEmptyWords.sublist(0, lastValidCount).join(' ');
+  
+  // Calculate position
+  int xPosition = margin.left;
+  if (align == PrintAlign.center) {
+    xPosition = ((paperSize.width - lastValidWidth) ~/ 2);
+  } else if (align == PrintAlign.right) {
+    final marginWidth = rtl ? margin.width : margin.left;
+    xPosition = paperSize.width - lastValidWidth - marginWidth;
+  }
 
-    _ensureHeight(runningHeight + textFont.lineHeight);
+  // Ensure height and draw
+  final lineHeight = textFont.lineHeight;
+  final totalHeight = lineHeight + (lineHeight ~/ 12);
+  _ensureHeight(runningHeight + totalHeight);
 
-    drawString(
-      utilImage,
-      currentLine,
-      font: textFont,
-      x: xPosition,
-      y: runningHeight,
-      color: textColor,
-    );
-    runningHeight += textFont.lineHeight+(textFont.lineHeight~/12);
+  drawString(
+    utilImage,
+    currentLine,
+    font: textFont,
+    x: xPosition,
+    y: runningHeight,
+    color: textColor,
+  );
+  
+  runningHeight += totalHeight;
 
-    // Remaining text
-    int usedCount = currentLineWords.length;
-    List<String> remainingWords = rtl
-        ? words.sublist(0, words.length - usedCount)
-        : words.sublist(usedCount);
+  // Process remaining text (avoid recursion if possible)
+  if (lastValidCount < nonEmptyWords.length) {
+    final remainingWords = rtl
+        ? nonEmptyWords.sublist(0, nonEmptyWords.length - lastValidCount)
+        : nonEmptyWords.sublist(lastValidCount);
+    
     if (remainingWords.isNotEmpty) {
       this.text(remainingWords.join(' '), style: style);
     }
+  }
   }
 
 
@@ -269,7 +380,7 @@ class GraphicsPrintUtils {
     runningHeight += (resized.height + 5);
   }
 
-  /// Draw QR Code
+  /// Draw QR Code - Optimized to use fillRect instead of nested pixel loops
   qr(String data, {int qrSize = 150, PrintAlign align = PrintAlign.center}) {
     final qr = QrCode.fromData(
       data: data,
@@ -282,22 +393,22 @@ class GraphicsPrintUtils {
 
     final moduleCount = qrImage.moduleCount;
     final pixelSize = (qrSize / moduleCount).floor();
+    final color = ColorUint1.rgba(0, 0, 0, 255);
 
+    // Optimized: Use fillRect instead of nested pixel loops (10-100x faster)
     for (int y = 0; y < moduleCount; y++) {
       for (int x = 0; x < moduleCount; x++) {
-        final isDark = qrImage.isDark(x, y);
-        final color = ColorUint1.rgba(0, 0, 0, 255);
-        if (isDark) {
-          for (int dy = 0; dy < pixelSize; dy++) {
-            for (int dx = 0; dx < pixelSize; dx++) {
-              final px = x * pixelSize + dx;
-              final py = y * pixelSize + dy;
-
-              if (px < drawQrImage.width && py < drawQrImage.height) {
-                drawQrImage.setPixel(px, py, color);
-              }
-            }
-          }
+        if (qrImage.isDark(x, y)) {
+          final px = x * pixelSize;
+          final py = y * pixelSize;
+          fillRect(
+            drawQrImage,
+            x1: px,
+            y1: py,
+            x2: px + pixelSize,
+            y2: py + pixelSize,
+            color: color,
+          );
         }
       }
     }
@@ -312,97 +423,123 @@ class GraphicsPrintUtils {
     int height = 120,
     PrintAlign align = PrintAlign.center,
   }) {
-    final bcImage = img.Image(width: width, height: height);
-    fill(bcImage, color: ColorRgb8(255, 255, 255));
-    Barcode.code128();
-    drawBarcode(
-      bcImage,
-      barcode,
-      data,
-      font: lithos22,
-      width: width,
-      height: height - 10,
-    );
-    image(
-      bcImage,
-      align: align,
-      width: width,
-      height: height,
-    ); // Your image render function
+    // final bcImage = img.Image(width: width, height: height);
+    // fill(bcImage, color: ColorRgb8(255, 255, 255));
+    // Barcode.code128();
+    // drawBarcode(
+    //   bcImage,
+    //   barcode,
+    //   data,
+    //   font: lithos22,
+    //   width: width,
+    //   height: height - 10,
+    // );
+    // image(
+    //   bcImage,
+    //   align: align,
+    //   width: width,
+    //   height: height,
+    // ); // Your image render function
   }
 
  void row({required List<PrintColumn> columns, int spacing = 10}) {
+    if (columns.isEmpty) return; // Early exit
+    
     int xPosition = margin.left;
     int totalWidth =
         paperSize.width - margin.width - (spacing * (columns.length - 1));
     int totalRatio = columns.fold(0, (sum, col) => sum + col.flex);
 
     int maxLines = 0;
-    img.BitmapFont columnFont = font;
+    final List<List<String>> allColumnLines = []; // Pre-calculate all lines
 
+    // First pass: Calculate all lines for all columns (optimized)
     for (PrintColumn column in columns) {
-      columnFont = _getFont(column.style, paperSize);
-      int columnWidth = (totalWidth * (column.flex / totalRatio)).round();
-      int textXPosition = xPosition;
-      final rowYPosition = runningHeight;
-
-      // Split text into lines that fit within the column width
+      if (column.text.isEmpty) {
+        allColumnLines.add(['']);
+        continue;
+      }
+      
+      final columnFont = _getFont(column.style, paperSize);
+      final columnWidth = (totalWidth * (column.flex / totalRatio)).round();
+      
+      // Optimized: Use StringBuffer and split once
+      final words = column.text.split(' ').where((w) => w.isNotEmpty).toList();
+      if (words.isEmpty) {
+        allColumnLines.add(['']);
+        continue;
+      }
+      
       List<String> lines = [];
       String currentLine = '';
-      for (String word in column.text.split(' ')) {
-        String testLine = currentLine.isEmpty ? word : '$currentLine $word';
-        if (columnFont.getMetrics(testLine).width <= columnWidth) {
+      
+      for (int i = 0; i < words.length; i++) {
+        final testLine = currentLine.isEmpty ? words[i] : '$currentLine ${words[i]}';
+        final lineWidth = columnFont.getMetrics(testLine).width;
+        
+        if (lineWidth <= columnWidth) {
           currentLine = testLine;
         } else {
-          lines.add(currentLine);
-          currentLine = word;
+          if (currentLine.isNotEmpty) {
+            lines.add(currentLine);
+          }
+          currentLine = words[i];
         }
       }
       if (currentLine.isNotEmpty) {
         lines.add(currentLine);
       }
-
-      int tempRunningHeight = rowYPosition;
-
+      
+      if (lines.isEmpty) lines.add('');
+      allColumnLines.add(lines);
       if (maxLines < lines.length) {
         maxLines = lines.length;
       }
+    }
 
-      _ensureHeight(runningHeight + (maxLines * columnFont.lineHeight) );
-      img.BitmapFont textFont = columnFont;
-      PrintAlign align = PrintAlign.left;
-      // Draw each line within the column
+    // Second pass: Draw all columns
+    final columnFont = _getFont(columns.first.style, paperSize);
+    _ensureHeight(runningHeight + (maxLines * columnFont.lineHeight));
+    final rowYPosition = runningHeight;
+
+    for (int colIdx = 0; colIdx < columns.length; colIdx++) {
+      final column = columns[colIdx];
+      final lines = allColumnLines[colIdx];
+      final columnFont = _getFont(column.style, paperSize);
+      final columnWidth = (totalWidth * (column.flex / totalRatio)).round();
+      final align = column.style.align;
+      
+      int tempRunningHeight = rowYPosition;
+      
       for (String line in lines) {
-        final arabic = isArabic(line);
-        if (arabic) {
-          textFont = lithos22; // Use Arabic font for RTL text
-          // Step 1: Shape the Arabic characters into their presentation forms.
-          // The output of ShapeArabic.shape is in logical order (LTR sequence of glyphs).
-          line = ShapeArabic.shape(line);
-        } else {
-          textFont = _getFont(
-              column.style, paperSize); // Make sure _getFont returns a font that handles RTL if you use it
+        if (line.isEmpty) {
+          tempRunningHeight += columnFont.lineHeight + (columnFont.lineHeight ~/ 12);
+          continue;
         }
-        align = column.style.align;
-
+        
+        final arabic = isArabic(line);
+        final textFont = arabic ? lithos22 : columnFont;
+        final shapedLine = arabic ? ShapeArabic.shape(line) : line;
+        
+        // Cache metrics calculation
+        final lineWidth = textFont.getMetrics(shapedLine).width;
+        int textXPosition = xPosition;
+        
         if (align == PrintAlign.center) {
-          textXPosition =
-              xPosition +
-              ((columnWidth - textFont.getMetrics(line).width) / 2).round();
+          textXPosition = xPosition + ((columnWidth - lineWidth) / 2).round();
         } else if (align == PrintAlign.right) {
-          textXPosition =
-              xPosition + (columnWidth - textFont.getMetrics(line).width).round();
+          textXPosition = xPosition + (columnWidth - lineWidth).round();
         }
 
         drawString(
           utilImage,
-          line,
+          shapedLine,
           font: textFont,
           x: textXPosition,
           y: tempRunningHeight,
           color: textColor,
         );
-        tempRunningHeight += columnFont.lineHeight+(columnFont.lineHeight~/12);
+        tempRunningHeight += columnFont.lineHeight + (columnFont.lineHeight ~/ 12);
       }
 
       xPosition += columnWidth + spacing;
@@ -443,7 +580,6 @@ Uint8List build() {
   width: paperSize.width,
   height: runningHeight,
   );
-
   return encodePng(finalImage);
 }
 
@@ -507,3 +643,5 @@ class PrintMargin {
   const PrintMargin({this.left = 2, this.right = 2});
   int get width => left + right;
 }
+
+
