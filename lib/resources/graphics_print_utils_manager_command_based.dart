@@ -267,7 +267,7 @@ class GraphicsPrintUtilsCommandBased {
   /// created inside the isolate.
   /// 
   /// Returns the final PNG image bytes.
-  Future<Uint8List> draw() async {
+  Future<Uint8List> build() async {
     // Capture all data needed for the isolate (must be serializable)
     final commands = List<_DrawCommand>.from(_commandQueue);
     final paperSizeCopy = paperSize;
