@@ -870,7 +870,7 @@ Future<Uint8List> _drawEscImageInBackgroundCommandBased() async {
   // Execute all queued operations in isolate and get result
   final buildStart=DateTime.now();
 
-  final bytes = await escImageUtil.draw();
+  final bytes = await escImageUtil.build();
   final now2=DateTime.now();
   print("*******************draw time ${buildStart.difference(now2)}");
   print("*******************total time ${now2.difference(now1)}");
