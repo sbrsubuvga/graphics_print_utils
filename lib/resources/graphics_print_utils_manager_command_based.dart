@@ -2,8 +2,18 @@ import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:barcode_image/barcode_image.dart';
+import 'package:graphics_print_utils/fonts/lithos_18.dart';
+import 'package:graphics_print_utils/fonts/lithos_18_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_22.dart';
+import 'package:graphics_print_utils/fonts/lithos_22_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_24.dart';
+import 'package:graphics_print_utils/fonts/lithos_24_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_26_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_34_bold.dart';
+import 'package:graphics_print_utils/fonts/lithos_40_bold.dart';
 import 'package:graphics_print_utils/resources/graphics_print_utils_manager.dart';
 import 'package:image/image.dart' as img;
+import 'package:image/image.dart' show BitmapFont;
 
 // Command types for queuing operations
 abstract class _DrawCommand {
@@ -260,6 +270,178 @@ class GraphicsPrintUtilsCommandBased {
     _commandQueue.add(_FeedCommand(lines));
   }
 
+  /// Calculate the total height needed for all queued commands
+  /// This simulates all commands without actually drawing to determine the final height
+  int _calculateTotalHeight() {
+    int runningHeight = 0;
+    final defaultFont = lithos22;
+    
+    // Font lookup maps (same as in GraphicsPrintUtils)
+    final fontMap58 = {
+      'small_false': () => lithos18,
+      'small_true': () => lithos18Bold,
+      'medium_false': () => lithos22,
+      'medium_true': () => lithos22Bold,
+      'large_false': () => lithos22Bold,
+      'large_true': () => lithos26Bold,
+    };
+    
+    final fontMap80 = {
+      'small_false': () => lithos22,
+      'small_true': () => lithos22Bold,
+      'medium_false': () => lithos24,
+      'medium_true': () => lithos24Bold,
+      'large_false': () => lithos34Bold,
+      'large_true': () => lithos40Bold,
+    };
+    
+    BitmapFont _getFont(PrintTextStyle? style) {
+      if (style == null) return defaultFont;
+      final map = paperSize == PrintPaperSize.mm58 ? fontMap58 : fontMap80;
+      final key = '${style.fontSize.name}_${style.bold}';
+      return map[key]?.call() ?? defaultFont;
+    }
+    
+    // Helper function to calculate text height recursively (matching GraphicsPrintUtils behavior)
+    int _calculateTextHeight(String text, PrintTextStyle? textStyle) {
+      if (text.isEmpty) return 0;
+      
+      final textFont = _getFont(textStyle ?? style);
+      final maxWidth = paperSize.width - margin.width;
+      final words = text.split(' ').where((w) => w.isNotEmpty).toList();
+      if (words.isEmpty) return 0;
+      
+      // Simulate the text wrapping logic from GraphicsPrintUtils
+      int lineCount = 0;
+      int wordIndex = 0;
+      
+      while (wordIndex < words.length) {
+        StringBuffer buffer = StringBuffer();
+        int wordsInLine = 0;
+        
+        // Build a line
+        while (wordIndex < words.length) {
+          final testWord = words[wordIndex];
+          final testLine = buffer.isEmpty ? testWord : '${buffer.toString()} $testWord';
+          final lineWidth = textFont.getMetrics(testLine).width;
+          
+          if (lineWidth <= maxWidth) {
+            if (buffer.isNotEmpty) buffer.write(' ');
+            buffer.write(testWord);
+            wordsInLine++;
+            wordIndex++;
+          } else {
+            break;
+          }
+        }
+        
+        if (wordsInLine == 0 && wordIndex < words.length) {
+          // Word too long, force it
+          wordsInLine = 1;
+          wordIndex++;
+        }
+        
+        if (wordsInLine > 0) {
+          lineCount++;
+        }
+      }
+      
+      final lineHeight = textFont.lineHeight.toInt();
+      final totalHeight = lineHeight + (lineHeight ~/ 12);
+      return totalHeight * lineCount;
+    }
+    
+    // Process each command to calculate height
+    for (final command in _commandQueue) {
+      if (command is _TextCommand) {
+        runningHeight += _calculateTextHeight(command.text, command.style);
+        
+      } else if (command is _LineCommand) {
+        runningHeight += 5 + command.thickness + 10;
+        
+      } else if (command is _DottedLineCommand) {
+        runningHeight += 5 + command.thickness + 10;
+        
+      } else if (command is _ImageCommand) {
+        // Decode image to get actual dimensions
+        final decodedImage = img.decodeImage(command.imageBytes);
+        if (decodedImage != null) {
+          final imageHeight = command.height ?? decodedImage.height;
+          runningHeight += imageHeight + 5;
+        }
+        
+      } else if (command is _QrCommand) {
+        // QR code height is the qrSize
+        runningHeight += command.qrSize + 5;
+        
+      } else if (command is _BarcodeCommand) {
+        // Barcode height is specified in command
+        runningHeight += command.height + 5;
+        
+      } else if (command is _RowCommand) {
+        if (command.columns.isEmpty) continue;
+        
+        final totalWidth = paperSize.width - margin.width - (command.spacing * (command.columns.length - 1));
+        final totalRatio = command.columns.fold(0, (sum, col) => sum + col.flex);
+        
+        int maxLines = 0;
+        
+        // Calculate lines for each column
+        for (final column in command.columns) {
+          if (column.text.isEmpty) {
+            maxLines = maxLines > 0 ? maxLines : 1;
+            continue;
+          }
+          
+          final columnFont = _getFont(column.style);
+          final columnWidth = (totalWidth * (column.flex / totalRatio)).round();
+          final words = column.text.split(' ').where((w) => w.isNotEmpty).toList();
+          
+          if (words.isEmpty) {
+            maxLines = maxLines > 0 ? maxLines : 1;
+            continue;
+          }
+          
+          int lineCount = 0;
+          String currentLine = '';
+          
+          for (final word in words) {
+            final testLine = currentLine.isEmpty ? word : '$currentLine $word';
+            final lineWidth = columnFont.getMetrics(testLine).width;
+            
+            if (lineWidth <= columnWidth) {
+              currentLine = testLine;
+            } else {
+              if (currentLine.isNotEmpty) {
+                lineCount++;
+              }
+              currentLine = word;
+            }
+          }
+          if (currentLine.isNotEmpty) {
+            lineCount++;
+          }
+          
+          if (lineCount == 0) lineCount = 1;
+          if (maxLines < lineCount) {
+            maxLines = lineCount;
+          }
+        }
+        
+        final columnFont = _getFont(command.columns.first.style);
+        final lineHeight = columnFont.lineHeight.toInt();
+        runningHeight += (maxLines * lineHeight) + (lineHeight ~/ 12);
+        
+      } else if (command is _FeedCommand) {
+        final feedFont = _getFont(style);
+        final lineHeight = feedFont.lineHeight.toInt();
+        runningHeight += (lineHeight + 10) * command.lines;
+      }
+    }
+    
+    return runningHeight;
+  }
+
   /// Execute all queued operations in an isolate and return the PNG bytes.
   /// 
   /// This runs all drawing operations in a background isolate to keep UI responsive.
@@ -268,6 +450,11 @@ class GraphicsPrintUtilsCommandBased {
   /// 
   /// Returns the final PNG image bytes.
   Future<Uint8List> build() async {
+    // Pre-calculate the total height needed
+    final calculatedHeight = _calculateTotalHeight();
+    // Add some padding to avoid resizing (20% buffer)
+    final initialHeight = (calculatedHeight * 1.2).round();
+    
     // Capture all data needed for the isolate (must be serializable)
     final commands = List<_DrawCommand>.from(_commandQueue);
     final paperSizeCopy = paperSize;
@@ -275,11 +462,12 @@ class GraphicsPrintUtilsCommandBased {
     final styleCopy = style;
 
     return await Isolate.run(() {
-      // Create a new GraphicsPrintUtils instance inside the isolate
+      // Create a new GraphicsPrintUtils instance inside the isolate with pre-calculated height
       final util = GraphicsPrintUtils(
         paperSize: paperSizeCopy,
         margin: marginCopy,
         style: styleCopy,
+        initialHeight: initialHeight,
       );
 
       // Execute all queued commands sequentially

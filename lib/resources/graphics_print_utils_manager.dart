@@ -67,11 +67,15 @@ static final Map<String, BitmapFont Function()> _fontMap80 = {
   this.paperSize = PrintPaperSize.mm80,
   this.margin = const PrintMargin(),
   PrintTextStyle? style = const PrintTextStyle(),
+  int? initialHeight,
 }) {
+  // Use provided initial height or default
+  final height = initialHeight ?? _initialHeight;
+  
   // Create image with white background in one step
   utilImage = img.Image(
     width: paperSize.width, 
-    height: _initialHeight,
+    height: height,
     numChannels: 4, // RGBA
   );
   
@@ -81,7 +85,7 @@ static final Map<String, BitmapFont Function()> _fontMap80 = {
     x1: 0,
     y1: 0,
     x2: paperSize.width,
-    y2: _initialHeight,
+    y2: height,
     color: img.ColorRgba8(255, 255, 255, 255),
   );
   
