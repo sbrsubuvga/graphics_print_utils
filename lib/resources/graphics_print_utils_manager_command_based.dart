@@ -53,7 +53,14 @@ class _ImageCommand extends _DrawCommand {
   final int? width;
   final int? height;
   final PrintAlign align;
-  _ImageCommand(this.imageBytes, this.width, this.height, this.align);
+  final int originalHeight;
+  _ImageCommand(
+    this.imageBytes,
+    this.width,
+    this.height,
+    this.align,
+    this.originalHeight,
+  );
   @override
   void execute(GraphicsPrintUtils util) {
     final decodedImage = img.decodeImage(imageBytes);
@@ -177,6 +184,25 @@ class GraphicsPrintUtilsCommandBased {
   final PrintMargin margin;
   final PrintTextStyle? style;
   final List<_DrawCommand> _commandQueue = [];
+  int _estimatedHeight = 0;
+
+  static final Map<String, BitmapFont Function()> _fontMap58 = {
+    'small_false': () => lithos18,
+    'small_true': () => lithos18Bold,
+    'medium_false': () => lithos22,
+    'medium_true': () => lithos22Bold,
+    'large_false': () => lithos22Bold,
+    'large_true': () => lithos26Bold,
+  };
+
+  static final Map<String, BitmapFont Function()> _fontMap80 = {
+    'small_false': () => lithos22,
+    'small_true': () => lithos22Bold,
+    'medium_false': () => lithos24,
+    'medium_true': () => lithos24Bold,
+    'large_false': () => lithos34Bold,
+    'large_true': () => lithos40Bold,
+  };
 
   GraphicsPrintUtilsCommandBased({
     this.paperSize = PrintPaperSize.mm80,
@@ -186,12 +212,16 @@ class GraphicsPrintUtilsCommandBased {
 
   /// Add text to the drawing queue
   void text(String text, {PrintTextStyle? style}) {
-    _commandQueue.add(_TextCommand(text, style));
+    final command = _TextCommand(text, style);
+    _commandQueue.add(command);
+    _addEstimatedHeight(command);
   }
 
   /// Add a horizontal line to the drawing queue
   void line({int thickness = 1}) {
-    _commandQueue.add(_LineCommand(thickness));
+    final command = _LineCommand(thickness);
+    _commandQueue.add(command);
+    _addEstimatedHeight(command);
   }
 
   /// Add a dotted horizontal line to the drawing queue
@@ -200,7 +230,9 @@ class GraphicsPrintUtilsCommandBased {
     int dotWidth = 5,
     int spacing = 3,
   }) {
-    _commandQueue.add(_DottedLineCommand(thickness, dotWidth, spacing));
+    final command = _DottedLineCommand(thickness, dotWidth, spacing);
+    _commandQueue.add(command);
+    _addEstimatedHeight(command);
   }
 
   /// Add an image to the drawing queue
@@ -213,7 +245,15 @@ class GraphicsPrintUtilsCommandBased {
   }) {
     // Serialize image to PNG bytes for isolate transfer
     final imageBytes = img.encodePng(subImage);
-    _commandQueue.add(_ImageCommand(imageBytes, width, height, align));
+    final command = _ImageCommand(
+      imageBytes,
+      width,
+      height,
+      align,
+      subImage.height,
+    );
+    _commandQueue.add(command);
+    _addEstimatedHeight(command);
   }
 
   /// Add a QR code to the drawing queue
@@ -222,7 +262,9 @@ class GraphicsPrintUtilsCommandBased {
     int qrSize = 150,
     PrintAlign align = PrintAlign.center,
   }) {
-    _commandQueue.add(_QrCommand(data, qrSize, align));
+    final command = _QrCommand(data, qrSize, align);
+    _commandQueue.add(command);
+    _addEstimatedHeight(command);
   }
 
   /// Add a barcode to the drawing queue
@@ -254,7 +296,9 @@ class GraphicsPrintUtilsCommandBased {
     } else {
       barcodeType = 'code128'; // default
     }
-    _commandQueue.add(_BarcodeCommand(data, barcodeType, width, height, align));
+    final command = _BarcodeCommand(data, barcodeType, width, height, align);
+    _commandQueue.add(command);
+    _addEstimatedHeight(command);
   }
 
   /// Add a row to the drawing queue
@@ -262,184 +306,149 @@ class GraphicsPrintUtilsCommandBased {
     required List<PrintColumn> columns,
     int spacing = 10,
   }) {
-    _commandQueue.add(_RowCommand(columns, spacing));
+    final command = _RowCommand(columns, spacing);
+    _commandQueue.add(command);
+    _addEstimatedHeight(command);
   }
 
   /// Add feed (blank lines) to the drawing queue
   void feed({int lines = 1}) {
-    _commandQueue.add(_FeedCommand(lines));
+    final command = _FeedCommand(lines);
+    _commandQueue.add(command);
+    _addEstimatedHeight(command);
   }
 
-  /// Calculate the total height needed for all queued commands
-  /// This simulates all commands without actually drawing to determine the final height
-  int _calculateTotalHeight() {
-    int runningHeight = 0;
-    final defaultFont = lithos22;
-    
-    // Font lookup maps (same as in GraphicsPrintUtils)
-    final fontMap58 = {
-      'small_false': () => lithos18,
-      'small_true': () => lithos18Bold,
-      'medium_false': () => lithos22,
-      'medium_true': () => lithos22Bold,
-      'large_false': () => lithos22Bold,
-      'large_true': () => lithos26Bold,
-    };
-    
-    final fontMap80 = {
-      'small_false': () => lithos22,
-      'small_true': () => lithos22Bold,
-      'medium_false': () => lithos24,
-      'medium_true': () => lithos24Bold,
-      'large_false': () => lithos34Bold,
-      'large_true': () => lithos40Bold,
-    };
-    
-    BitmapFont _getFont(PrintTextStyle? style) {
-      if (style == null) return defaultFont;
-      final map = paperSize == PrintPaperSize.mm58 ? fontMap58 : fontMap80;
-      final key = '${style.fontSize.name}_${style.bold}';
-      return map[key]?.call() ?? defaultFont;
+  void _addEstimatedHeight(_DrawCommand command) {
+    _estimatedHeight += _calculateCommandHeight(command);
+  }
+
+  int _calculateCommandHeight(_DrawCommand command) {
+    if (command is _TextCommand) {
+      return _estimateTextHeight(command.text, command.style);
+    } else if (command is _LineCommand || command is _DottedLineCommand) {
+      final thickness = command is _LineCommand
+          ? command.thickness
+          : (command as _DottedLineCommand).thickness;
+      return _estimateLineHeight(thickness);
+    } else if (command is _ImageCommand) {
+      final resolvedHeight = command.height ?? command.originalHeight;
+      return resolvedHeight + 5;
+    } else if (command is _QrCommand) {
+      return command.qrSize + 5;
+    } else if (command is _BarcodeCommand) {
+      return command.height + 5;
+    } else if (command is _RowCommand) {
+      return _estimateRowHeight(command);
+    } else if (command is _FeedCommand) {
+      return _estimateFeedHeight(command.lines);
     }
-    
-    // Helper function to calculate text height recursively (matching GraphicsPrintUtils behavior)
-    int _calculateTextHeight(String text, PrintTextStyle? textStyle) {
-      if (text.isEmpty) return 0;
-      
-      final textFont = _getFont(textStyle ?? style);
-      final maxWidth = paperSize.width - margin.width;
-      final words = text.split(' ').where((w) => w.isNotEmpty).toList();
-      if (words.isEmpty) return 0;
-      
-      // Simulate the text wrapping logic from GraphicsPrintUtils
-      int lineCount = 0;
-      int wordIndex = 0;
-      
+    return 0;
+  }
+
+  BitmapFont _resolveFont(PrintTextStyle? overrideStyle) {
+    final effectiveStyle = overrideStyle ?? style ?? const PrintTextStyle();
+    final map = paperSize == PrintPaperSize.mm58 ? _fontMap58 : _fontMap80;
+    final key = '${effectiveStyle.fontSize.name}_${effectiveStyle.bold}';
+    return map[key]?.call() ?? lithos22;
+  }
+
+  int _estimateTextHeight(String text, PrintTextStyle? textStyle) {
+    if (text.isEmpty) return 0;
+
+    final font = _resolveFont(textStyle);
+    final maxWidth = paperSize.width - margin.width;
+    final words = text.split(' ').where((w) => w.isNotEmpty).toList();
+    if (words.isEmpty) return 0;
+
+    int lineCount = 0;
+    int wordIndex = 0;
+
+    while (wordIndex < words.length) {
+      final buffer = StringBuffer();
+      int wordsInLine = 0;
+
       while (wordIndex < words.length) {
-        StringBuffer buffer = StringBuffer();
-        int wordsInLine = 0;
-        
-        // Build a line
-        while (wordIndex < words.length) {
-          final testWord = words[wordIndex];
-          final testLine = buffer.isEmpty ? testWord : '${buffer.toString()} $testWord';
-          final lineWidth = textFont.getMetrics(testLine).width;
-          
-          if (lineWidth <= maxWidth) {
-            if (buffer.isNotEmpty) buffer.write(' ');
-            buffer.write(testWord);
-            wordsInLine++;
-            wordIndex++;
-          } else {
-            break;
-          }
-        }
-        
-        if (wordsInLine == 0 && wordIndex < words.length) {
-          // Word too long, force it
-          wordsInLine = 1;
+        final word = words[wordIndex];
+        final testLine = buffer.isEmpty ? word : '${buffer.toString()} $word';
+        final lineWidth = font.getMetrics(testLine).width;
+        if (lineWidth <= maxWidth) {
+          if (buffer.isNotEmpty) buffer.write(' ');
+          buffer.write(word);
+          wordsInLine++;
           wordIndex++;
-        }
-        
-        if (wordsInLine > 0) {
-          lineCount++;
+        } else {
+          break;
         }
       }
-      
-      final lineHeight = textFont.lineHeight.toInt();
-      final totalHeight = lineHeight + (lineHeight ~/ 12);
-      return totalHeight * lineCount;
+
+      if (wordsInLine == 0) {
+        wordsInLine = 1;
+        wordIndex++;
+      }
+
+      lineCount++;
     }
-    
-    // Process each command to calculate height
-    for (final command in _commandQueue) {
-      if (command is _TextCommand) {
-        runningHeight += _calculateTextHeight(command.text, command.style);
-        
-      } else if (command is _LineCommand) {
-        runningHeight += 5 + command.thickness + 10;
-        
-      } else if (command is _DottedLineCommand) {
-        runningHeight += 5 + command.thickness + 10;
-        
-      } else if (command is _ImageCommand) {
-        // Decode image to get actual dimensions
-        final decodedImage = img.decodeImage(command.imageBytes);
-        if (decodedImage != null) {
-          final imageHeight = command.height ?? decodedImage.height;
-          runningHeight += imageHeight + 5;
-        }
-        
-      } else if (command is _QrCommand) {
-        // QR code height is the qrSize
-        runningHeight += command.qrSize + 5;
-        
-      } else if (command is _BarcodeCommand) {
-        // Barcode height is specified in command
-        runningHeight += command.height + 5;
-        
-      } else if (command is _RowCommand) {
-        if (command.columns.isEmpty) continue;
-        
-        final totalWidth = paperSize.width - margin.width - (command.spacing * (command.columns.length - 1));
-        final totalRatio = command.columns.fold(0, (sum, col) => sum + col.flex);
-        
-        int maxLines = 0;
-        
-        // Calculate lines for each column
-        for (final column in command.columns) {
-          if (column.text.isEmpty) {
-            maxLines = maxLines > 0 ? maxLines : 1;
-            continue;
-          }
-          
-          final columnFont = _getFont(column.style);
-          final columnWidth = (totalWidth * (column.flex / totalRatio)).round();
-          final words = column.text.split(' ').where((w) => w.isNotEmpty).toList();
-          
-          if (words.isEmpty) {
-            maxLines = maxLines > 0 ? maxLines : 1;
-            continue;
-          }
-          
-          int lineCount = 0;
-          String currentLine = '';
-          
-          for (final word in words) {
-            final testLine = currentLine.isEmpty ? word : '$currentLine $word';
-            final lineWidth = columnFont.getMetrics(testLine).width;
-            
-            if (lineWidth <= columnWidth) {
-              currentLine = testLine;
-            } else {
-              if (currentLine.isNotEmpty) {
-                lineCount++;
-              }
-              currentLine = word;
-            }
-          }
+
+    final lineHeight = font.lineHeight.toInt();
+    final totalHeight = lineHeight + (lineHeight ~/ 12);
+    return totalHeight * lineCount;
+  }
+
+  int _estimateRowHeight(_RowCommand command) {
+    if (command.columns.isEmpty) {
+      return 0;
+    }
+    final totalWidth =
+        paperSize.width - margin.width - (command.spacing * (command.columns.length - 1));
+    final totalRatio = command.columns.fold(0, (sum, col) => sum + col.flex);
+
+    int maxLines = 0;
+    for (final column in command.columns) {
+      final columnFont = _resolveFont(column.style);
+      final columnWidth = (totalWidth * (column.flex / totalRatio)).round();
+      final words = column.text.split(' ').where((w) => w.isNotEmpty).toList();
+
+      if (words.isEmpty) {
+        maxLines = maxLines > 0 ? maxLines : 1;
+        continue;
+      }
+
+      int lineCount = 0;
+      String currentLine = '';
+      for (final word in words) {
+        final testLine = currentLine.isEmpty ? word : '$currentLine $word';
+        final lineWidth = columnFont.getMetrics(testLine).width;
+        if (lineWidth <= columnWidth) {
+          currentLine = testLine;
+        } else {
           if (currentLine.isNotEmpty) {
             lineCount++;
           }
-          
-          if (lineCount == 0) lineCount = 1;
-          if (maxLines < lineCount) {
-            maxLines = lineCount;
-          }
+          currentLine = word;
         }
-        
-        final columnFont = _getFont(command.columns.first.style);
-        final lineHeight = columnFont.lineHeight.toInt();
-        runningHeight += (maxLines * lineHeight) + (lineHeight ~/ 12);
-        
-      } else if (command is _FeedCommand) {
-        final feedFont = _getFont(style);
-        final lineHeight = feedFont.lineHeight.toInt();
-        runningHeight += (lineHeight + 10) * command.lines;
+      }
+      if (currentLine.isNotEmpty) {
+        lineCount++;
+      }
+      if (lineCount == 0) {
+        lineCount = 1;
+      }
+      if (maxLines < lineCount) {
+        maxLines = lineCount;
       }
     }
-    
-    return runningHeight;
+
+    final font = _resolveFont(command.columns.first.style);
+    final lineHeight = font.lineHeight.toInt();
+    return (maxLines * lineHeight) + (lineHeight ~/ 12);
+  }
+
+  int _estimateLineHeight(int thickness) => 5 + thickness + 10;
+
+  int _estimateFeedHeight(int lines) {
+    final feedFont = _resolveFont(style);
+    final lineHeight = feedFont.lineHeight.toInt();
+    return (lineHeight + 10) * lines;
   }
 
   /// Execute all queued operations in an isolate and return the PNG bytes.
@@ -450,10 +459,9 @@ class GraphicsPrintUtilsCommandBased {
   /// 
   /// Returns the final PNG image bytes.
   Future<Uint8List> build() async {
-    // Pre-calculate the total height needed
-    final calculatedHeight = _calculateTotalHeight();
-    // Add some padding to avoid resizing (20% buffer)
-    final initialHeight = (calculatedHeight * 1.2).round();
+    // Use the running estimate with a 20% buffer to minimize resizing
+    final initialHeight =
+        _estimatedHeight > 0 ? (_estimatedHeight * 1.2).round() : null;
     
     // Capture all data needed for the isolate (must be serializable)
     final commands = List<_DrawCommand>.from(_commandQueue);
@@ -483,6 +491,7 @@ class GraphicsPrintUtilsCommandBased {
   /// Clear all queued commands
   void clear() {
     _commandQueue.clear();
+    _estimatedHeight = 0;
   }
 
   /// Get the number of queued commands
